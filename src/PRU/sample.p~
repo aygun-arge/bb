@@ -143,8 +143,8 @@ SAMPLE:
     MOV r2, r31				
     MOV r2, r31				
     MOV r2, r31		//r2 is nu een realtime kopie van r31
-    MOV r2, r4
-    ADD r4, r4, 200
+    //MOV r2, r4
+    //ADD r4, r4, 200
     //AND r6, r4, r8	//r6 bevat nu het and van r2 (de kopie van r31 (binaire waarde) en het bitmask. In principe alleen 
 			//de adc databits staan nu in r6
     
