@@ -8,6 +8,16 @@
 #ifndef DEVICES_H_
 #define DEVICES_H_
 
+#include <stdint.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <getopt.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/types.h>
+#include <linux/spi/spidev.h>
+
 #define UART4	"/dev/ttyO4"
 #define SPI1	"/dev/spidev1.0"
 #define MEM		"/dev/mem"
@@ -46,5 +56,6 @@ int gpio_set_edge(unsigned int gpio, char *edge);
 int gpio_fd_open(unsigned int gpio);
 int gpio_fd_close(int fd);
 
+void pabort(const char *s);
 
 #endif /* DEVICES_H_ */
