@@ -88,8 +88,6 @@ BEGIN:
     //Store values from read from the DDR memory into PRU shared RAM
     SBCO      r0, CONST_PRUSHAREDRAM, 0, 12
 
-    //Zorg er voor dat buffer echt is uitgeschakeld
-    BUFFER_DISABLE
     //zet macros in register zodat bewerkelijkheid beter is.
     MOV r7,	RES_RAM
     MOV r8,	ADC_MASK
@@ -127,13 +125,12 @@ WAIT_FS:
     QBNE WAIT_FS, r13, 0x02
 
 SAMPLING:
-    BUFFER_ENABLE
     MOV r3, 0
     SBCO r3, CONST_PRUSHAREDRAM, 12, 4 //maak getal dingetje 0 to be sure
 
     //voor het nette zou de adc latency geset kunnen worden.
     //voor mij echt niet boeiend, dus ga dit niet doen.
-
+    MOV r4, 20
 SAMPLE:
     // om rising edge te detecteren, controlleer of clk laag is
     WBC ADC_CLK				
@@ -146,17 +143,16 @@ SAMPLE:
     MOV r2, r31				
     MOV r2, r31				
     MOV r2, r31		//r2 is nu een realtime kopie van r31
-	
+    MOV r2, r4
+    ADD r4, r4, 200
     //AND r6, r4, r8	//r6 bevat nu het and van r2 (de kopie van r31 (binaire waarde) en het bitmask. In principe alleen 
 			//de adc databits staan nu in r6
-
-    SBBO r2, r7, 0, 2	//kopieer 2bytes(16 bits) van r6(ADC_sample) naar r7 (RAM adress) zonder offset
+    
+    SBBO r2, r7, 0, 2	//kopieer 2bytes(16 bits) van r2(ADC_sample) naar r7 (RAM adress) zonder offset
     ADD	 r7, r7, 4	//verhoog het adres met 1 32bit waarde (4 bytes)
 	
     SUB  r9, r9, 1	// Trek 1 af van aan aantal te nemen samples.
     QBNE SAMPLE, r9, 0	// Jump naar SAMPLE zolang het aantal te nemen samples niet 0 is.
-    
-    BUFFER_DISABLE
 
     MOV r1, 0x03 //r1 = 3
     SBCO r1, CONST_PRUSHAREDRAM, 0, 4

@@ -12,4 +12,39 @@
 #define SPI1	"/dev/spidev1.0"
 #define MEM		"/dev/mem"
 
+//PINS
+
+#define TRANS_SELEC 48
+#define DISPL_PWRDWN 49
+#define INTERRUPT_DISPL 60
+#define ADC_BUF 61
+
+
+#define SYSFS_GPIO_DIR "/sys/class/gpio"
+//#define POLL_TIMEOUT (3 * 1000) /* 3 seconds */
+#define MAX_BUF 64
+
+typedef enum {
+INPUT = 0,
+OUTPUT = 1
+}PIN_DIRECTION;
+
+typedef enum {
+LOW = 0,
+HIGH = 1
+}PIN_VALUE;
+
+/****************************************************************
+* gpio_export
+****************************************************************/
+int gpio_export(unsigned int gpio);
+int gpio_unexport(unsigned int gpio);
+int gpio_set_dir(unsigned int gpio, PIN_DIRECTION out_flag);
+int gpio_set_value(unsigned int gpio, PIN_VALUE value);
+int gpio_get_value(unsigned int gpio, unsigned int *value);
+int gpio_set_edge(unsigned int gpio, char *edge);
+int gpio_fd_open(unsigned int gpio);
+int gpio_fd_close(int fd);
+
+
 #endif /* DEVICES_H_ */
