@@ -1,0 +1,72 @@
+/*
+* dts file BB-BONE-PRU-ADC-CDS-00A0.dts
+*/
+/dts-v1/;
+/plugin/;
+
+/ {
+  compatible = "ti,beaglebone", "ti,beaglebone-black";
+
+  /* identification */
+  part-number = "BB-BONE-PRU-ADC-CDS";
+  version = "00A0";
+
+  /* D0 -> D11 + ADC_CLK */
+  exclusive-use =
+    "P8.45",0
+    "P8.46",1
+    "P8.43",2
+    "P8.44",3
+    "P8.41",4
+    "P8.42",5
+    "P8.39",6
+    "P8.40",7
+    "P8.27",8
+    "P8.29",9
+    "P8.28",10
+    "P8.30",11
+    "P9.26";in
+  
+  fragment@0 {
+    target = <&am33xx_pinmux>;
+    __overlay__ {
+      mygpio: pinmux_mygpio{
+        pinctrl-single,pins = <
+          0x0a0 0x2e
+  	  0x0a4 0x2e
+          0x0a8 0x2e
+          0x0ac 0x2e
+          0x0b0 0x2e
+          0x0b4 0x2e
+          0x0b8 0x2e
+          0x0bc 0x2e
+          0x0e0 0x2e
+          0x0e4 0x2e
+          0x0e8 0x2e
+          0x0ec 0x2e
+          0x180 0x2e
+          >;
+	/* 0xOFFSET 0xINSTELLING [0x2e = r31, 0x15 = r30 met pull-up*/
+      };
+    };
+  };
+
+  fragment@1 {
+    target = <&ocp>;
+    __overlay__ {
+      test_helper: helper {
+        compatible = "bone-pinmux-helper";
+        pinctrl-names = "default";
+        pinctrl-0 = <&mygpio>;
+        status = "okay";
+      };
+    };
+  };
+
+  fragment@2{
+  target = <&pruss>;
+    __overlay__ {
+      status = "okay";
+    };
+  };
+};

@@ -1,0 +1,58 @@
+/*
+* dts file BB-BONE-PRU-UART-CDS-00A0.dts
+*/
+/dts-v1/;
+/plugin/;
+
+/ {
+  compatible = "ti,beaglebone", "ti,beaglebone-black";
+
+  /* identification */
+  part-number = "BB-BONE-PRU-UART-CDS";
+  version = "00A0";
+
+  /*PRU_UART0_TX, PRU_UART0_RX, PRU_UART0_RTS, PRU_UART0_CTS, PRU0[7](TXE), PRU0[5](RXE) */
+  exclusive-use =
+    "P9.17",
+    "P9.18",
+    "P9.19",
+    "P9.20",
+    "P9.25",
+    "P9.27";
+  
+  fragment@0 {
+    target = <&am33xx_pinmux>;
+    __overlay__ {
+      mygpio: pinmux_mygpio{
+        pinctrl-single,pins = <
+          0x15c 0x14
+          0x158 0x34
+          0x17c 0x05
+          0x178 0x05
+          0x1ac 0x05
+          0x1a4 0x15
+ 
+          >;
+      };
+    };
+  };
+
+  fragment@1 {
+    target = <&ocp>;
+    __overlay__ {
+      test_helper: helper {
+        compatible = "bone-pinmux-helper";
+        pinctrl-names = "default";
+        pinctrl-0 = <&mygpio>;
+        status = "okay";
+      };
+    };
+  };
+
+  fragment@2{
+  target = <&pruss>;
+    __overlay__ {
+      status = "okay";
+    };
+  };
+};
