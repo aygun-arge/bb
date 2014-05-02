@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo BB-BONE-PRU-ADC-CDS > $SLOTS
+echo BB-BONE-PRU-ADC-CDS > $SLOTS
+echo BB-UART4 > $SLOTS
+echo BB-SPIDEV1 > $SLOTS
+
+cat $SLOTS
