@@ -24,8 +24,8 @@
     "P8.29",	/*pr_pru1_r31_9      (ADC_D9)  */
     "P8.28",	/*pr_pru1_r31_10     (ADC_D10) */
     "P8.30",	/*pr_pru1_r31_11     (ADC_D11) */
-    "P9.26";	/*pr_pru1_r31_16     (ADC_CLKIN)*/
-
+    "P9.26",	/*pr_pru1_r31_16     (ADC_CLKIN)*/
+    "P8.26";    /*GPIO1_29	     (ADC_BUF_EN)*/
   
   fragment@0 {
     target = <&am33xx_pinmux>;
@@ -45,7 +45,7 @@
           0x0e8 0x26 /*  |slw-fst|I|PD|P-ud EN|MODE6*/
           0x0ec 0x26 /*  |slw-fst|I|PD|P-ud EN|MODE6*/
           0x180 0x26 /*  |slw-fst|I|PD|P-ud EN|MODE6*/
-
+          0x07c 0x17 /*  |slw-fst|O|PU|P-ud EN|MODE7*/
           >;
 
       };

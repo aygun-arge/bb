@@ -24,12 +24,12 @@
     __overlay__ {
       mygpio: pinmux_mygpio{
         pinctrl-single,pins = <
-          0x15c 0x14	/*spi0_cs0.pr1_uart0_txd       |MODE4*/
-          0x158 0x34	/*spi0_d1.pr1_uart0_rxd        |MODE4*/
-          0x17c 0x05	/*uart1_rtsn.pr1_uart0_rts_n   |MODE5*/
-          0x178 0x05	/*uart1_ctsn.pr1_uart0_cts_n   |MODE5*/
-          0x1ac 0x05	/*spi0_d0.pr1_pru0_pru_r30_7   |MODE5*/
-          0x1a4 0x15	/*spi0_sclk.pr1_pru0_pru_r30_5 |MODE5*/
+          0x15c 0x14	/*spi0_cs0.pr1_uart0_txd       |slw-fst|O|PU|P-ud EN|MODE4*/
+          0x158 0x34	/*spi0_d1.pr1_uart0_rxd        |slw-fst|I|PU|P-ud EN|MODE4*/
+          0x17c 0x05	/*uart1_rtsn.pr1_uart0_rts_n   |slw-fst|O|PD|P-ud EN|MODE5*/
+          0x178 0x05	/*uart1_ctsn.pr1_uart0_cts_n   |slw-fst|O|PD|P-ud EN|MODE5*/
+          0x1ac 0x05	/*spi0_d0.pr1_pru0_pru_r30_7   |slw-fst|O|PD|P-ud EN|MODE5*/
+          0x1a4 0x15	/*spi0_sclk.pr1_pru0_pru_r30_5 |slw-fst|O|PU|P-ud EN|MODE5*/
  
           >;
       };
