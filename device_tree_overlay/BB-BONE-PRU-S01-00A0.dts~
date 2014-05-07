@@ -19,15 +19,10 @@
 	exclusive-use =
 		/* the pin header uses */
 		
-
-
-
-
-
-		"P9.31",	/* pru0: pr1_pru0_pru_r3x_0 */
-		"P9.29",	/* pru0: pr1_pru0_pru_r3x_1 */
-		"P9.30",	/* pru0: pr1_pru0_pru_r3x_2 */
-		"P9.28",	/* pru0: pr1_pru0_pru_r3x_3 */
+		//"P9.31",	/* pru0: pr1_pru0_pru_r3x_0 */
+		//"P9.29",	/* pru0: pr1_pru0_pru_r3x_1 */
+		//"P9.30",	/* pru0: pr1_pru0_pru_r3x_2 */
+		//"P9.28",	/* pru0: pr1_pru0_pru_r3x_3 */
 		"P9.42",	/* pru0: pr1_pru0_pru_r3x_4 */
 		"P9.27",	/* pru0: pr1_pru0_pru_r3x_5 */
 		"P9.41",	/* pru0: pr1_pru0_pru_r3x_6 */
@@ -79,10 +74,14 @@
 
 			pru_pru_pins: pinmux_pru_pru_pins {
 				pinctrl-single,pins = <
-					0x190 0x05	/* mcasp0_aclkx.pr1_pru0_pru_r30_0, 	MODE5 | OUTPUT | PRU*/					
-					0x194 0x05	/* mcasp0_fsx.pr1_pru0_pru_r30_1, 	MODE5 | OUTPUT | PRU */
-					0x198 0x05	/* mcasp0_axr0.pr1_pru0_pru_r30_2, 	MODE5 | OUTPUT | PRU */
-					0x19c 0x05	/* mcasp0_ahclkr.pr1_pru0_pru_r30_3, 	MODE5 | OUTPUT | PRU */
+					//0x190 0x05	/* 
+mcasp0_aclkx.pr1_pru0_pru_r30_0, 	MODE5 | OUTPUT | PRU*/					
+					//0x194 0x05	/* 
+mcasp0_fsx.pr1_pru0_pru_r30_1, 	MODE5 | OUTPUT | PRU */
+					//0x198 0x05	/* 
+mcasp0_axr0.pr1_pru0_pru_r30_2, 	MODE5 | OUTPUT | PRU */
+					//0x19c 0x05	/* 
+mcasp0_ahclkr.pr1_pru0_pru_r30_3, 	MODE5 | OUTPUT | PRU */
 					0x1a0 0x05	/* mcasp0_aclkr.pr1_pru0_pru_r30_4, 	MODE5 | OUTPUT | PRU */
 					0x1a4 0x05	/* mcasp0_fsr.pr1_pru0_pru_r30_5, 	MODE5 | OUTPUT | PRU */
 					0x1a8 0x05	/* mcasp0_axr1.pr1_pru0_pru_r30_6, 	MODE5 | OUTPUT | PRU */

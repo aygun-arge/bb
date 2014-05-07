@@ -74,14 +74,10 @@
 
 			pru_pru_pins: pinmux_pru_pru_pins {
 				pinctrl-single,pins = <
-					//0x190 0x05	/* 
-mcasp0_aclkx.pr1_pru0_pru_r30_0, 	MODE5 | OUTPUT | PRU*/					
-					//0x194 0x05	/* 
-mcasp0_fsx.pr1_pru0_pru_r30_1, 	MODE5 | OUTPUT | PRU */
-					//0x198 0x05	/* 
-mcasp0_axr0.pr1_pru0_pru_r30_2, 	MODE5 | OUTPUT | PRU */
-					//0x19c 0x05	/* 
-mcasp0_ahclkr.pr1_pru0_pru_r30_3, 	MODE5 | OUTPUT | PRU */
+					//0x190 0x05	/* mcasp0_aclkx.pr1_pru0_pru_r30_0, 	MODE5 | OUTPUT | PRU */			
+					//0x194 0x05	/* mcasp0_fsx.pr1_pru0_pru_r30_1, 	MODE5 | OUTPUT | PRU */
+					//0x198 0x05	/* mcasp0_axr0.pr1_pru0_pru_r30_2, 	MODE5 | OUTPUT | PRU */
+					//0x19c 0x05	/* mcasp0_ahclkr.pr1_pru0_pru_r30_3, 	MODE5 | OUTPUT | PRU */
 					0x1a0 0x05	/* mcasp0_aclkr.pr1_pru0_pru_r30_4, 	MODE5 | OUTPUT | PRU */
 					0x1a4 0x05	/* mcasp0_fsr.pr1_pru0_pru_r30_5, 	MODE5 | OUTPUT | PRU */
 					0x1a8 0x05	/* mcasp0_axr1.pr1_pru0_pru_r30_6, 	MODE5 | OUTPUT | PRU */
@@ -90,7 +86,6 @@ mcasp0_ahclkr.pr1_pru0_pru_r30_3, 	MODE5 | OUTPUT | PRU */
 					0x038 0x26	/* gpmc_ad14.pr1_pru0_pru_r31_14,	MODE6 | INPUT  | PRU */
 					0x034 0x06	/* gpmc_ad13.pr1_pru0_pru_r30_15, 	MODE6 | OUTPUT | PRU */
 					0x03c 0x26	/* gpmc_ad15.pr1_pru0_pru_r31_15,	MODE6 | INPUT  | PRU */
-
 
 					0x0a0 0x05	/* lcd_data0.pr1_pru1_pru_r30_0, 	MODE5 | OUTPUT | PRU */
 					0x0a4 0x05	/* lcd_data1.pr1_pru1_pru_r30_1, 	MODE5 | OUTPUT | PRU */
