@@ -28,8 +28,8 @@
             pinctrl_spi1: pinctrl_spi1_pins {
                 pinctrl-single,pins = <                                        
                     0x190 0x13    /* P9_31[SPI1-SCLK] = mcasp0_aclkx.spi1_sclk, OUTPUT_PULLUP | MODE3 */
-                    0x194 0x33    /* P9_29[SPI1-D0  ] = mcasp0_fsx.spi1_d0, 	INPUT_PULLUP  | MODE3 */
-                    0x198 0x13    /* P9_30[SPI1-D1  ] = mcasp0_axr0.spi1_d1, 	OUTPUT_PULLUP | MODE3 */
+                    0x194 0x33    /* P9_29[SPI1-D0  ] = mcasp0_fsx.spi1_d0, INPUT_PULLUP  | MODE3     */
+                    0x198 0x13    /* P9_30[SPI1-D1  ] = mcasp0_axr0.spi1_d1, OUTPUT_PULLUP | MODE3    */
                     0x19c 0x13    /* P9_28[SPI1-CS0 ] = mcasp0_ahclkr.spi1_cs0, OUTPUT_PULLUP | MODE3 */                    
        
                 >;
