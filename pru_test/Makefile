@@ -34,12 +34,12 @@ all: loader firmware
 
 loader:
 #maak firmwarelaad applicatie
-$(CROSS_COMPILE)gcc $(PROJECT).c $(CFLAGS) -o $(PROJECT) $(LDFLAGS)
+$(CROSS_COMPILE)gcc mytest.c $(CFLAGS) -o mytest $(LDFLAGS)
 
 
 firmware:
 #make PRU application
-${PASM} -V3 -b $(PROJECT).p
+${PASM} -V3 -cdl -b mytest.p
 
 
 
