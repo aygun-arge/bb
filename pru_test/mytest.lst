@@ -1,0 +1,17 @@
+mytest.p(   66) : 0x0000 = Label      : MEMACCESS_DDR_PRUSHAREDRAM:
+mytest.p(   69) : 0x0000 = 0x91042480 :     LBCO     r0, C4, 4, 4
+mytest.p(   70) : 0x0001 = 0x1d04e0e0 :     CLR      r0, r0, 4
+mytest.p(   71) : 0x0002 = 0x81042480 :     SBCO     r0, C4, 4, 4
+mytest.p(   75) : 0x0003 = 0x240120e0 :     MOV      r0, 0x00000120
+mytest.p(   76) : 0x0004 = 0x240002c1 :     MOV      r1, 0x22028
+mytest.p(   76) : 0x0005 = 0x24202881 :     MOV      r1, 0x22028
+mytest.p(   77) : 0x0006 = 0xe1002180 :     SBBO     r0, r1, #0x00, 4
+mytest.p(   81) : 0x0007 = 0x240010c0 :     MOV      r0, 0x00100000
+mytest.p(   81) : 0x0008 = 0x24000080 :     MOV      r0, 0x00100000
+mytest.p(   82) : 0x0009 = 0x240002c1 :     MOV      r1, 0x2202C
+mytest.p(   82) : 0x000a = 0x24202c81 :     MOV      r1, 0x2202C
+mytest.p(   83) : 0x000b = 0xe1002180 :     SBBO     r0, r1, #0x00, 4
+mytest.p(   86) : 0x000c = 0x9100bf80 :     LBCO     r0, C31, 0, 12
+mytest.p(   89) : 0x000d = 0x8100bc80 :     SBCO     r0, C28, 0, 12
+mytest.p(   92) : 0x000e = 0x2400231f :     MOV      r31.b0, 19+16
+mytest.p(   95) : 0x000f = 0x2a000000 :     HALT     

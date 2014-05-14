@@ -70,7 +70,7 @@
 #include <string.h>
 
 // Driver header file
-#include "prussdrv.h"
+#include <prussdrv.h>
 #include <pruss_intc_mapping.h>
 
 /******************************************************************************
@@ -134,7 +134,7 @@ int main (void)
 
     printf("\nINFO: Starting %s example.\r\n", "PRU_memAcc_DDR_sharedRAM");
     /* Initialize the PRU */
-    prussdrv_init ();
+    prussdrv_init();
 
     /* Open PRU Interrupt */
     ret = prussdrv_open(PRU_EVTOUT_0);

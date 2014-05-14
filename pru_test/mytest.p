@@ -1,5 +1,5 @@
 // *
-// * PRU_memAcc_DDR_sharedRAM.p
+// * mytest.p
 // *
 // * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
 // *
@@ -61,7 +61,7 @@
 .origin 0
 .entrypoint MEMACCESS_DDR_PRUSHAREDRAM
 
-#include "PRU_memAcc_DDR_sharedRAM.hp"
+#include "mytest.hp"
 
 MEMACCESS_DDR_PRUSHAREDRAM:
 
