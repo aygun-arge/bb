@@ -8,8 +8,6 @@ PROJECT?= mytest
 
 PASM?=/usr/bin/pasm
 
-
-
 CFLAGS+= -Wall -I$(INCDIR_APP_LOADER) -D__DEBUG -O2 -mtune=cortex-a8 -march=armv7-a
 LDFLAGS+=-L$(LIBDIR_APP_LOADER) -lprussdrv
 OBJDIR=obj
@@ -20,7 +18,6 @@ DEPS = $(patsubst %,$(INCDIR_APP_LOADER)/%,$(_DEPS))
 
 _OBJ = $(PROJECT).o #PRU_memAcc_DDR_sharedRAM.o
 OBJ = $(patsubst %,$(OBJDIR)/%,$(_OBJ))
-
 
 $(OBJDIR)/%.o: %.c $(DEPS)
 	@mkdir -p obj
@@ -37,9 +34,7 @@ all: loader firmware
 
 loader:
 #maak firmwarelaad applicatie
-mkdir -p bin
-
-$(CROSS_COMPILE)gcc ${PROJECT}.c $(CFLAGS) -o ${PROJECT} $(LDFLAGS)
+$(CROSS_COMPILE)gcc $(PROJECT).c $(CFLAGS) -o $(PROJECT) $(LDFLAGS)
 
 
 firmware:
