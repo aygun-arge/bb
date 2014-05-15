@@ -18,6 +18,8 @@
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
 
+#include "general.h"
+
 typedef uint16_t spidata_t;
 
 #define ARRAY_SIZE(a) ( (sizeof(a)/sizeof(spidata_t)) * 2) /* lens in bytes */
@@ -92,7 +94,7 @@ int main(int argc, char *argv[]) {
 
     parse_opts(argc, argv);
 
-    fd = open(device, O_RDWR);
+    fd = open(SPI1, O_RDWR);
     if (fd < 0)
         pabort("can't open device");
 
