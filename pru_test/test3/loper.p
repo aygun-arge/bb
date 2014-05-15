@@ -60,6 +60,7 @@
 	SBBO r2, r3, 0, 4
 .endm
 
+START:
 
 	MOV r1, 10 			//r1 = 10 om 10x te loop-en
 GA:

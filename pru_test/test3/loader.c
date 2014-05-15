@@ -43,7 +43,7 @@ int main(void){
 
 	//Execute example on PRU
 	printf("\tINFO: Executing example.\r\n");
-	prussdrv_exec_program(PRU_NUM, "./loper.bin");
+	prussdrv_exec_program(PRU_NUM, "./blink.bin");
 	
         // for (i = 0; i < 100000; i++) {
         //         usleep(100);
