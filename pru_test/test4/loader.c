@@ -132,7 +132,7 @@ int main (void)
     unsigned int ret;
     tpruss_intc_initdata pruss_intc_initdata = PRUSS_INTC_INITDATA;
 
-    printf("\nINFO: Starting %s example.\r\n", "PRU_memAcc_DDR_sharedRAM");
+    printf("\nINFO: Starting %s example.\r\n", "test4");
     /* Initialize the PRU */
     prussdrv_init();
 

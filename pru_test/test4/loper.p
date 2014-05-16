@@ -1,13 +1,12 @@
 .origin 0
 .entrypoint START
 
-
-#include "buggy/pwm.hp"
+#include "PRU_memAccess_DDR_PRUsharedRAM.hp"
+#include "pru_sander.hp"
 
 #define DELAYWAARDE 0x00a00000
 
 START:
-
         //enable ocp master
         LBCO    r0, CONST_PRUCFG, 4, 4
         CLR     r0, r0,           4         // Clear SYSCFG[STANDBY_INIT] to enable OCP master port
@@ -26,7 +25,7 @@ START:
 
     // field to 0x0010.  This will make C31 point to 0x80001000 (DDR memory).
 
-    MOV     r0, 0x00100000
+    MOV	      r0, 0x00100000
     MOV       r1, CTPPR_1
     ST32      r0, r1
 
