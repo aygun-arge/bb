@@ -1,19 +1,49 @@
 .origin 0
 .entrypoint START
 
+//
+// SPECIFIEK VOOR PRU 1
+//
+// MOMENTEEL EEN LOOPLICHT OP LCD_DATA0 tm 4
+//
+
+
+
+
 #include "PRU_memAccess_DDR_PRUsharedRAM.hp"
 #include "pru_sander.hp"
 
 #define DELAYWAARDE 0x00a00000
+
 #define D0 r30.t0
 #define D1 r30.t1
 #define D2 r30.t2
 #define D3 r30.t3
 #define D4 r30.t4
 
+
+#define ADC_D0  r31.t0
+#define ADC_D1  r31.t1
+#define ADC_D2  r31.t2
+#define ADC_D3  r31.t3
+#define ADC_D4  r31.t4
+#define ADC_D5  r31.t5
+#define ADC_D6  r31.t6
+#define ADC_D7  r31.t7
+#define ADC_D8  r31.t8
+#define ADC_D9  r31.t9
+#define ADC_D10 r31.t10
+#define ADC_D11 r31.t11
+#define ADC_CLK r31.t16
+
+#define BITMASK 0x00000fff //masker van bits 0 -> 11
+
+
+
+
 .macro DELAY
 DELAY:	
-	MOV r1, 5000
+	MOV r1, 20000000
 DEL:
 	SUB r1, r1, 1
 	QBNE DEL, r1, 0
@@ -41,16 +71,7 @@ START:
     MOV       r1, CTPPR_1
     ST32      r0, r1
 
-
-    //Load values from external DDR Memory into Registers R0/R1/R2
-
-    //LBCO      r0, CONST_DDR, 0, 12
-    //Store values from read from the DDR memory into PRU shared RAM
-    //SBCO      r0, CONST_PRUSHAREDRAM, 0, 12
-
-
-
-	MOV r6, 10 			//r1 = 10 om 10x te loop-en
+	MOV r6, 10 			//r6 = 10 om 10x te loop-en
 GA:
 	SET D0
  	DELAY
@@ -68,7 +89,13 @@ GA:
 	DELAY
 	CLR D4
 	SUB r6, r6 , 1
-	QBNE GA, r6, 0			// jump naar blink wanneer r1 = niet 0
+	QBNE GA, r6, 0			// jump naar GA wanneer r6 = niet 0
+
+
+SAMPLE:
+
+
+
 
 EXIT:
     // Send notification to Host for program completion
