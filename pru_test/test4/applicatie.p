@@ -53,19 +53,45 @@ START:
 	MOV r6, 10 			//r1 = 10 om 10x te loop-en
 GA:
 	SET D0
-	DELAY
+DELAY1:	
+	MOV r1, 5000
+DEL1:
+	SUB r1, r1, 1
+	QBNE DEL1, r1, 0
+
 	CLEAR D0
 	SET D1
-	DELAY
+
+DELAY2:	
+	MOV r1, 5000
+DEL2:
+	SUB r1, r1, 1
+	QBNE DEL2, r1, 0
+
 	CLEAR D1
 	SET D2
-	DELAY
+DELAY3:	
+	MOV r1, 5000
+DEL3:
+	SUB r1, r1, 1
+	QBNE DEL3, r1, 0
+
 	CLEAR D2
 	SET D3
-	DELAY
+DELAY4:	
+	MOV r1, 5000
+DEL4:
+	SUB r1, r1, 1
+	QBNE DEL4, r1, 0
+
 	CLEAR D3
 	SET D4
-	DELAY
+DELAY5:	
+	MOV r1, 5000
+DEL5:
+	SUB r1, r1, 1
+	QBNE DEL5, r1, 0
+
 	CLEAR D4
 	SUB r6, r6 , 1
 	QBNE GA, r6, 0			// jump naar blink wanneer r1 = niet 0
