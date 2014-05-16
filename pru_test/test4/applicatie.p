@@ -13,7 +13,7 @@
 
 .macro DELAY
 DELAY:	
-	MOV r1, 5000
+	MOV r1, 20000000
 DEL:
 	SUB r1, r1, 1
 	QBNE DEL, r1, 0
