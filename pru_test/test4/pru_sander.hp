@@ -1,0 +1,94 @@
+// *
+// * pru_sander.hp
+// *
+// * Copyright (C) 2014 - 
+// *
+/
+
+
+// *****************************************************************************/
+// file:   pru_sander.hp
+//
+// brief:  IO_analysis assembly constants. 
+//
+//
+//  (C) Copyright 2014
+//
+//  author     F.S. van Schaick
+// *****************************************************************************/
+
+
+#ifndef _pru_sander_HP_
+#define _pru_sander_HP_
+
+
+// ***************************************
+// *      Global Macro definitions       *
+// ***************************************
+
+// GPIO register adresses and operation offsets
+#define GPIO1 0x4804c000
+
+
+#define GPIO_CLEARDATAOUT 0x190
+#define GPIO_SETDATAOUT 0x194 
+
+//USR LED ofsets
+ 
+#define OFFSET_USR3 1<<24              
+#define OFFSET_USR2 1<<23
+#define OFFSET_USR1 1<<22
+#define OFFSET_USR0 1<<21
+
+
+
+// turn on USR_LED snipppets
+.macro USR3_ON
+	MOV r2, OFFSET_USR3
+	MOV r3, GPIO1 | GPIO_SETDATAOUT // maakt r3 GPIO1 bitwise or setdata = 4804c194
+	SBBO r2, r3, 0, 4		// copy 4 bytes van r2 naar r3 offset 0
+.endm
+
+.macro USR2_ON
+	MOV r2, OFFSET_USR2
+	MOV r3, GPIO1 | GPIO_SETDATAOUT
+	SBBO r2, r3, 0, 4
+.endm
+
+.macro USR1_ON
+	MOV r2, OFFSET_USR1
+	MOV r3, GPIO1 | GPIO_SETDATAOUT
+	SBBO r2, r3, 0, 4
+.endm
+
+.macro USR0_ON
+	MOV r2, OFFSET_USR0
+	MOV r3, GPIO1 | GPIO_SETDATAOUT
+	SBBO r2, r3, 0, 4
+.endm
+//turn off user leds
+.macro USR3_OFF
+	MOV r2, OFFSET_USR3
+	MOV r3, GPIO1 | GPIO_CLEARDATAOUT
+	SBBO r2, r3, 0, 4
+.endm
+		
+.macro USR2_OFF
+	MOV r2, OFFSET_USR2
+	MOV r3, GPIO1 | GPIO_CLEARDATAOUT
+	SBBO r2, r3, 0, 4
+.endm
+
+.macro USR1_OFF
+	MOV r2, OFFSET_USR1
+	MOV r3, GPIO1 | GPIO_CLEARDATAOUT
+	SBBO r2, r3, 0, 4
+.endm
+
+.macro USR0_OFF
+	MOV r2, OFFSET_USR0
+	MOV r3, GPIO1 | GPIO_CLEARDATAOUT
+	SBBO r2, r3, 0, 4
+.endm
+
+#endif //_pru_sander_
