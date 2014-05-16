@@ -28,7 +28,7 @@ START:
     MOV     r0, 0x00100000
     MOV       r1, CTPPR_1
     ST32      r0, r1
-//30
+
 
     //Load values from external DDR Memory into Registers R0/R1/R2
 
@@ -39,78 +39,32 @@ START:
 
 
 
-//    // test GP output
-//
-//	MOV r1, 10 //r1 = 10
-//BLINK:
-//	MOV r2, 7<<22			//r2 = 0b111(21)(20)enz  //USR leds zijn GPIO 1_21 tm _23
-//        MOV r3, GPIO1 | GPIO_SETDATAOUT // maakt r3 GPIO1 bitwise or setdata = 4804c194
-//        SBBO r2, r3, 0, 4		//copy 4 bytes van r2 naar r3 offset 0
-//        MOV r0, 0x00a00000		//r0 = groot getal
-//DELAY:
-//       SUB r0, r0, 1			//r0 = r0 - 1
-//        QBNE DELAY, r0, 0		//jump naar delay wanneer r0 = geen 0
-//        MOV r2, 7<<22
-//        MOV r3, GPIO1 | GPIO_CLEARDATAOUT
-//        SBBO r2, r3, 0, 4
-//        MOV r0, 0x00a00000		//weer delay
-//DELAY2:
-//        SUB r0, r0, 1
-//        QBNE DELAY2, r0, 0
-//        SUB r1, r1, 1			// r1 = r1 - 1
-//	QBNE BLINK, r1, 0		// jump naar blink wanneer r1 = niet 0
+    // test GP output
+	MOV r1, 10 //r1 = 10
+BLINK:
+	MOV r2, 7<<22			//r2 = 0b111(21)(20)enz  //USR leds zijn GPIO 1_21 tm _23
+        MOV r3, GPIO1 | GPIO_SETDATAOUT // maakt r3 GPIO1 bitwise or setdata = 4804c194
+        SBBO r2, r3, 0, 4		//copy 4 bytes van r2 naar r3 offset 0
+        MOV r0, 0x00a00000		//r0 = groot getal
+DELAY:
+       SUB r0, r0, 1			//r0 = r0 - 1
+       QBNE DELAY, r0, 0		//jump naar delay wanneer r0 = geen 0
+       MOV r2, 7<<22
+       MOV r3, GPIO1 | GPIO_CLEARDATAOUT
+       SBBO r2, r3, 0, 4
+       MOV r0, 0x00a00000		//weer delay
+DELAY2:
+       SUB r0, r0, 1
+       QBNE DELAY2, r0, 0
+       SUB r1, r1, 1			// r1 = r1 - 1
+       QBNE BLINK, r1, 0		// jump naar blink wanneer r1 = niet 0
 					//wanneer r1 = 0, programma dus afgelopen.
-   // test GP output
-
-    MOV r1, 10 // loop 10 times
-
-LOP:
-
-    MOV r2, 1<<21
-
-    MOV r3, GPIO1 | GPIO_SETDATAOUT
-
-    SBBO r2, r3, 0, 4
-
-
-    MOV r0, 0x00f00000
-
-DEL1:
-
-    SUB r0, r0, 1
-
-    QBNE DEL1, r0, 0
-
-
-    MOV R2, 1<<21
-
-    MOV r3, GPIO1 | GPIO_CLEARDATAOUT
-
-    SBBO r2, r3, 0, 4
-
-
-    MOV r0, 0x00f00000
-
-DEL2:
-
-    SUB r0, r0, 1
-
-    QBNE DEL2, r0, 0
-
-
-    SUB r1, r1, 1
-
-    QBNE LOP, r1, 0
-
-
     // Send notification to Host for program completion
 
-    MOV       r31.b0, PRU0_ARM_INTERRUPT+16
-
-
+       MOV r31.b0, PRU0_ARM_INTERRUPT+16
     // Halt the processor
 
-    HALT
+       HALT
 
 
 
