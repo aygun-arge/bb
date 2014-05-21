@@ -7,21 +7,13 @@ cat $SLOTS
 #UART van PRU
 #echo BB-BONE-PRU-UART-CDS > $SLOTS
 
-
-#PRU test
-#echo BB-BONE-PRU-ADC-CDS > $SLOTS
-
 #ADC pinnen pru
-#echo BB-BONE-PRU-ADC-CDS > $SLOTS
+echo BB-BONE-PRU-S3 > $SLOTS
 
 #uart4
-#echo BB-UART4-CDS > $SLOTS
+echo BB-UART4 > $SLOTS
 
 #SPI1
-#echo BB-SPIDEV1 > $SLOTS
-
-#SPI1 geedit
-#echo BB-SPI1-CDS > $SLOTS
-
+echo BB-SPIDEV1-S1 > $SLOTS
 
 cat $SLOTS
