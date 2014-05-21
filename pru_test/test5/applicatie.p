@@ -27,17 +27,20 @@
 //	r1	temporaries
 //	r2	temporaries
 //	r3	temporaries
-//	r4
-//	r5	ADC recording register
-//	r6
-//	r7
-//	r8:	ADC pipeline latency count register
-//	r9
-//	r10
+//	r4	temporaries
+//	r5:	ADC recording register
+//	r6:	Sample copie
+//
+//	r7:	gedeeld geheugen	
+//	r8:	masker om allen benodigde bits te krijgen
+//	r9:	Aantal samples
+//	r10	ADC pipeline latency count register
 //
 //
 //	r30:	output pins
 //	r31:	input pins
+//
+//	Eterne buffer op GPIO1[29]
 
 
 
@@ -67,8 +70,23 @@
 #define ADC_D11 r31.t11
 #define ADC_CLK r31.t16
 
-#define BITMASK 0x00000fff //masker van bits 0 -> 11
 
+#define ADCMASK 0x00000fff //masker van bits 0 -> 11
+#define SHARED	0x00010000
+
+//locatie in geheugen van cmd
+#define CMD 0x00010000
+
+//locatie in geheugen van samples (reserved ram)
+#define RES_RAM 0x00010004
+
+//hoeveelheid samples (voorlopig 100, nader te bepalen)
+#define SAMPLES 100
+
+
+.macro OPENBUFFER
+
+.endm
 
 
 
@@ -102,6 +120,16 @@ START:
     MOV       r1, CTPPR_1
     ST32      r0, r1
 
+
+	//zet macros in register zodat bewerkelijkheid beter is.
+	MOV r6,	RES_RAM
+	MOV r8,	ADCMASK
+	MOV r9,	SAMPLES
+	
+
+	//test of het SHARED RAM werkt
+	LBCO r0, CONST_DDR, 0, 12	//r1 t/m r3 worden gevuld met data uit het shared DDR RAM
+		
 	MOV r6, 10 			//r6 = 10 om 10x te loop-en
 GA:
 	SET D0
@@ -121,31 +149,48 @@ GA:
 	CLR D4
 	SUB r6, r6 , 1
 	QBNE GA, r6, 0			// jump naar GA wanneer r6 = niet 0
-	JMP EXIT			//Jump naar exit, geen return adress
+	JMP EXIT				//Jump naar exit, geen return adress
+
+	//TODO: open buffer wanneer niet open, vervolg dan hieronder
 
 SET_LATENCY:				//Wordt gedaan om synchroon met ADC te lopen. Is niet nodig wanneer adc continue loopt
-	MOV r8,	5			//lat reg = 5
+	MOV r10,	5			//lat reg = 5
 LAT_SYNC:	
-	WBC ADC_CLK			//wait until bit clear op ADC_CLK (falling edge)
-	WBS ADC_CLK			//wait until bit set op ADC_CLK	(rising edge)
-	SUB r8, r8, 1			//latency reg - 1
-	QBNE LAT_SYNC, r8, 0		//jmp naar LAT_SYNC wanneer latency reg != 0
-					//wanneer latency reg = 0, adc en pru gelijk qua registers. 
+	WBC ADC_CLK				//wait until bit clear op ADC_CLK (falling edge)
+	WBS ADC_CLK				//wait until bit set op ADC_CLK	(rising edge)
+	SUB r10, r10, 1			//latency reg - 1
+	QBNE LAT_SYNC, r10, 0	//jmp naar LAT_SYNC wanneer latency reg != 0
+							//wanneer latency reg = 0, adc en pru gelijk qua registers. 
+
 SAMPLE:
-	WBC ADC_CLK			// om rising edge te detecteren, controlleer of clk laag is
+	WBC ADC_CLK				// om rising edge te detecteren, controlleer of clk laag is
 	//Rising Edge komt nu
 	WBS ADC_CLK
 	
-	MOV r8, 1			//nutteloze instructie, echter wel nodig om worst case CLK->D_OUT
-	MOV r8, 0			//op te vangen. 2 instructie is 10 ns.
+	// De onderstaande instructies zijn hetzelfde, dit is gedaan om de CLK-> D_OUT tijd op te vangen. Elke instructie is 5ns, er zijn dus 2 instructies nodig om de vertraging af te vangen.
+	
+	MOV r4, r31				
+	MOV r4, r31				
+	MOV r4, r31				//r4 is nu een realtime kopie van r31
+	
+	AND r6, r4, r8			//r6 bevat nu het and van r4 (de kopie van r31 (binaire waarde) en het bitmask. In principe alleen 
+							//de adc databits staan nu in r6
 
-	MOV r6, r31			//r6 is nu copie van r31
-	AND r7, r6, BITMASK		//r7 bevat nu het and van r6 en het bitmask. In principe alleen 
-					//de adc databits staan nu in r7
-
-
-
-EXIT:
+	SBBO r6, r7, 0, 2		//kopieer 2bytes(16 bits) van r6(ADC_sample) naar r7 (RAM adress) zonder offset
+	ADD	 r7, r7, 4			//verhoog het adres met 1 32bit waarde (4 bytes)
+	
+	SUB  r9, r9, 1			// Trek 1 af van aan aantal te nemen samples.
+	QBNE SAMPLE, r9, 0		// Jump naar SAMPLE zolang het aantal te nemen samples niet 0 is.
+	
+EINDE:
+	
+	//TODO: zet buffer weer in gesloten modus.
+	MOV r1, 1				//temporary 1 = 1
+	SBCO r1, CONST_PRUSHAREDRAM, 0, 4 // schrijf 0x01 naar shared ram, om aan te geven aan de main applicatie dat sample sequentie is afgerond.
+	//in principe kan hier worden ingebakken dat pru niet moet worden uitgeschakeld, maar wel kan worden geresynced of toch exit
+	
+	
+	EXIT:
     // Send notification to Host for program completion
     MOV       r31.b0, PRU1_ARM_INTERRUPT+16
 
