@@ -45,6 +45,7 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <i2cfunc.h>
 // Driver header file
 #include "prussdrv.h"
 #include <pruss_intc_mapping.h>	 
@@ -66,6 +67,10 @@
 #define PRU_NUM 	PRU_1		// hier instellen welke PRU core gebruikt moet worden
 					// N.B. ook de interrupt vectoren corrigeren op de pru core keuze
 
+#define DDR_BASEADDR    0x80000000
+#define OFFSET_DDR      0x00001008
+#define OFFSET_SHAREDRAM 0
+#define PRUSS1_SHARED_DATARAM 4
 
 /******************************************************************************
 * Local Typedef Declarations                                                  *
@@ -75,7 +80,7 @@
 /******************************************************************************
 * Local Function Declarations                                                 *
 ******************************************************************************/
-
+static int LOCAL_exampleInit ( );
 
 /******************************************************************************
 * Local Variable Definitions                                                  *
@@ -90,6 +95,18 @@
 /******************************************************************************
 * Global Variable Definitions                                                 *
 ******************************************************************************/
+//ti dingen
+static int mem_fd;
+static void *ddrMem, *sharedMem;
+static unsigned int *sharedMem_int;
+
+
+//andere dingen
+static int chunk;
+
+
+FILE* save_file;
+
 
 
 /******************************************************************************
@@ -141,4 +158,61 @@ int main (void)
     
 
     return(0);
+}
+
+/******************************************************************************
+ * Local Function Definitions                                                 *
+ ******************************************************************************/
+
+static int LOCAL_exampleInit (  )
+{
+    void *DDR_regaddr1, *DDR_regaddr2, *DDR_regaddr3;
+    
+    /* open the device */
+    mem_fd = open("/dev/mem", O_RDWR);
+    if (mem_fd < 0) {
+        printf("Failed to open /dev/mem (%s)\n", strerror(errno));
+        return -1;
+    }
+    
+    /* map the DDR memory */
+    ddrMem = mmap(0, 0x0FFFFFFF, PROT_WRITE | PROT_READ, MAP_SHARED, mem_fd, DDR_BASEADDR);
+    if (ddrMem == NULL) {
+        printf("Failed to map the device (%s)\n", strerror(errno));
+        close(mem_fd);
+        return -1;
+    }
+    
+    /* Store Addends in DDR memory location */
+    DDR_regaddr1 = ddrMem + OFFSET_DDR;
+    DDR_regaddr2 = ddrMem + OFFSET_DDR + 0x00000004;
+    DDR_regaddr3 = ddrMem + OFFSET_DDR + 0x00000008;
+    
+    *(unsigned long*) DDR_regaddr1 = ADDEND1;
+    *(unsigned long*) DDR_regaddr2 = ADDEND2;
+    *(unsigned long*) DDR_regaddr3 = ADDEND3;
+    
+    return(0);
+}
+
+
+
+void sample2file(void)
+{
+    unsigned short int *DDR_regaddr;
+    unsigned short int *p_value
+    unsigned short int value
+    
+    DDR_regaddr = ddrMem + OFFSET_DDR;
+    p_value = (unsigned short int*)&sharedMem_int[OFFSET_SHAREDRAM+1];
+    for (int x = 1; x<100; x++)
+    {
+        value = *p_value
+        fprintf(save_file," %d\n", value);
+        p_value = p_value + 2;
+        
+    }
+    
+    printf("\n saved data\n");
+    
 }
