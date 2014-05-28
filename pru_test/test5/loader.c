@@ -98,7 +98,7 @@ void sample2file(void)
 * Global Variable Definitions                                                 *
 ******************************************************************************/
 //ti dingen
-static int mem_fd;
+int mem_fd;
 static void *ddrMem, *sharedMem;
 static unsigned int *sharedMem_int;
 
