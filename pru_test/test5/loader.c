@@ -98,9 +98,9 @@ void sample2file(void)
 * Global Variable Definitions                                                 *
 ******************************************************************************/
 //ti dingen
-static int mem_fd;
-static void *ddrMem, *sharedMem;
-static unsigned int *sharedMem_int;
+
+void *ddrMem, *sharedMem;
+unsigned int *sharedMem_int;
 
 
 //andere dingen
@@ -221,6 +221,7 @@ unsigned int initializePruss(void)
 
 static int LOCAL_exampleInit (  )
 {
+    static int mem_fd;
     void *DDR_regaddr1, *DDR_regaddr2, *DDR_regaddr3;
     
     /* open the device */
