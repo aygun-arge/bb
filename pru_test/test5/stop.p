@@ -1,6 +1,8 @@
 .origin 0
 .entrypoint EXIT
 
+#include "PRU_memAccess_DDR_PRUsharedRAM.hp"
+
 //
 // Stop programma om pru ingeval van fout te halten
 //

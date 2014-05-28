@@ -45,7 +45,6 @@
 #include <unistd.h>
 #include <string.h>
 
-#include <i2cfunc.h>
 // Driver header file
 #include "prussdrv.h"
 #include <pruss_intc_mapping.h>	 
