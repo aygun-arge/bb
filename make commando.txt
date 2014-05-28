@@ -1,0 +1,1 @@
+gcc pwm.c -Wall -I /usr/include -D__DEBUG -O2 -mtune=cortex-a8 -march=armv7-a -o pwm -L /usr/lib  -lprussdrv -lpthread -lm
