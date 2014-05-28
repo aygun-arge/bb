@@ -122,12 +122,10 @@ int main ( ){
     char fname_new[255];
     
     
-    if(initializePruss() != TRUE)
-    {
+    if(initializePruss() != TRUE){
         return(-1);
     }
     
-
 
     /* doe dingen */
     save_file = fopen("samples.txt", "r+");
