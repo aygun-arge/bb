@@ -4,15 +4,6 @@
 //
 // SPECIFIEK VOOR PRU 1
 //
-// MOMENTEEL EEN LOOPLICHT OP LCD_DATA0 tm 4
-//
-//
-//
-//
-//
-//
-//
-//
 //////////////////////////////////////////////////
 //
 //	ADC:LTC2225
@@ -83,13 +74,6 @@
 //hoeveelheid samples (voorlopig 100, nader te bepalen)
 #define SAMPLES 100
 
-
-.macro OPENBUFFER
-
-.endm
-
-
-
 .macro DELAY
 DELAY:	
 	MOV r1, 20000000
@@ -122,7 +106,7 @@ START:
 
 
 	//zet macros in register zodat bewerkelijkheid beter is.
-	MOV r6,	RES_RAM
+	MOV r7,	RES_RAM
 	MOV r8,	ADCMASK
 	MOV r9,	SAMPLES
 	
@@ -140,7 +124,7 @@ LAT_SYNC:
 	WBS ADC_CLK				//wait until bit set op ADC_CLK	(rising edge)
 	SUB r10, r10, 1			//latency reg - 1
 	QBNE LAT_SYNC, r10, 0	//jmp naar LAT_SYNC wanneer latency reg != 0
-							//wanneer latency reg = 0, adc en pru gelijk qua registers. 
+	MOV r16, 1			//wanneer latency reg = 0, adc en pru gelijk qua registers. 
 
 SAMPLE:
 	WBC ADC_CLK				// om rising edge te detecteren, controlleer of clk laag is
@@ -152,12 +136,12 @@ SAMPLE:
 	MOV r4, r31				
 	MOV r4, r31				
 	MOV r4, r31				//r4 is nu een realtime kopie van r31
-	
-	AND r6, r4, r8			//r6 bevat nu het and van r4 (de kopie van r31 (binaire waarde) en het bitmask. In principe alleen 
-							//de adc databits staan nu in r6
+		
+//	AND r6, r16, r8			//r6 bevat nu het and van r4 (de kopie van r31 (binaire waarde) en het bitmask. In principe alleen 
+	ADD r16, r16, 1						//de adc databits staan nu in r6
 
-	SBBO r6, r7, 0, 2		//kopieer 2bytes(16 bits) van r6(ADC_sample) naar r7 (RAM adress) zonder offset
-	ADD	r7, r7, 4			//verhoog het adres met 1 32bit waarde (4 bytes)
+	SBBO r16.b0, r7, 0, 2		//kopieer 2bytes(16 bits) van r6(ADC_sample) naar r7 (RAM adress) zonder offset
+	ADD  r7, r7, 4			//verhoog het adres met 1 32bit waarde (4 bytes)
 	
 	SUB  r9, r9, 1			// Trek 1 af van aan aantal te nemen samples.
 	QBNE SAMPLE, r9, 0		// Jump naar SAMPLE zolang het aantal te nemen samples niet 0 is.

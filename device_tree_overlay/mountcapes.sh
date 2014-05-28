@@ -6,9 +6,10 @@ cat $SLOTS
 
 #UART van PRU
 #echo BB-BONE-PRU-UART-CDS > $SLOTS
-
+#
+#GPIO BB-GPIO-IO-1
 #ADC pinnen pru
-echo BB-BONE-PRU-S3 > $SLOTS
+echo BB-BONE-PRU1-S01 > $SLOTS
 
 #uart4
 echo BB-UART4 > $SLOTS

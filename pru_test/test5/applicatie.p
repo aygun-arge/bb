@@ -84,12 +84,6 @@
 #define SAMPLES 100
 
 
-.macro OPENBUFFER
-
-.endm
-
-
-
 .macro DELAY
 DELAY:	
 	MOV r1, 20000000
@@ -132,6 +126,7 @@ START:
 		
 
 	//TODO: open buffer wanneer niet open, vervolg dan hieronder
+	BUFFER_ENABLE
 
 SET_LATENCY:				//Wordt gedaan om synchroon met ADC te lopen. Is niet nodig wanneer adc continue loopt
 	MOV r10,	5			//lat reg = 5
@@ -163,7 +158,7 @@ SAMPLE:
 	QBNE SAMPLE, r9, 0		// Jump naar SAMPLE zolang het aantal te nemen samples niet 0 is.
 	
 EINDE:
-	
+	BUFFER_DISABLE
 	//TODO: zet buffer weer in gesloten modus.
 	MOV r1, 1				//temporary 1 = 1
 	SBCO r1, CONST_PRUSHAREDRAM, 0, 4 // schrijf 0x01 naar shared ram, om aan te geven aan de main applicatie dat sample sequentie is afgerond.

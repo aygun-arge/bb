@@ -68,7 +68,7 @@
 
 #define DDR_BASEADDR    0x80000000
 #define OFFSET_DDR      0x00001008
-#define OFFSET_SHAREDRAM 0
+#define OFFSET_SHAREDRAM 4
 #define PRUSS1_SHARED_DATARAM 4
 #define SAMPLES 100
 
@@ -156,7 +156,7 @@ int main ( )
     DDR_ackaddr = ddrMem + OFFSET_DDR - 4;
     
     printf("\nINFO: Schrijf iets in RAM\n");
-    sharedMem_int[OFFSET_SHAREDRAM] = 0; //mean no command, not used by pru now
+    sharedMem_int[OFFSET_SHAREDRAM] = 0; //means no command, not used by pru now
     
     
     /* Execute binary on PRU */
@@ -187,10 +187,10 @@ int main ( )
     
     
     /* Wait until PRU0 has finished execution */
-    //printf("\tINFO: Waiting for HALT command.\r\n");
-    //prussdrv_pru_wait_event (PRU_EVTOUT_1);
-    //printf("\tINFO: PRU completed transfer.\r\n");
-    //prussdrv_pru_clear_event (PRU_EVTOUT_1, PRU1_ARM_INTERRUPT);
+    printf("\tINFO: Waiting for HALT command.\r\n");
+//    prussdrv_pru_wait_event (PRU_EVTOUT_1);
+    printf("\tINFO: PRU completed transfer.\r\n");
+//    prussdrv_pru_clear_event (PRU_EVTOUT_1, PRU1_ARM_INTERRUPT);
 
 
     
@@ -285,8 +285,11 @@ void sample2file(void)
     for (x = 1; x<SAMPLES; x++)
     {
         value = *p_value;
+	value = value & 0xfff; //alleen eerste 12 bits
+	printf("%d    %d \n", x, value);
         fprintf(save_file," %d\n", value);
-        p_value = p_value + 2;
+        p_value++;
+	p_value++;
         
     }
     

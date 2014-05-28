@@ -38,7 +38,19 @@
 #define OFFSET_USR2 1<<23
 #define OFFSET_USR1 1<<22
 #define OFFSET_USR0 1<<21
+#define ADC_BUFFER  1<<29
 
+.macro BUFFER_DISABLE
+       MOV r2, ADC_BUFFER
+       MOV r3, GPIO1 | GPIO_SETDATAOUT
+       SBBO r2, r3, 0, 4
+.endm
+
+.macro BUFFER_ENABLE
+       MOV r2, ADC_BUFFER
+       MOV r3, GPIO1 | GPIO_CLEARDATAOUT
+       SBBO r2, r3, 0, 4
+.endm
 
 
 // turn on USR_LED snipppets
