@@ -63,7 +63,6 @@
 #define PRU_1		1
 #define PRU_0		0
 
-
 #define PRU_NUM 	PRU_1		// hier instellen welke PRU core gebruikt moet worden
 					// N.B. ook de interrupt vectoren corrigeren op de pru core keuze
 
@@ -73,6 +72,9 @@
 #define PRUSS1_SHARED_DATARAM 4
 #define SAMPLES 100
 
+#define TRUE 1
+#define FALSE 0
+
 /******************************************************************************
 * Local Typedef Declarations                                                  *
 ******************************************************************************/
@@ -81,9 +83,12 @@
 /******************************************************************************
 * Local Function Declarations                                                 *
 ******************************************************************************/
-int LOCAL_exampleInit ( );
-unsigned int initializePruss( );
-void sample2file( )
+int Init_RAM( );
+int initializePruss( );
+void sample2file(void);
+
+
+
 /******************************************************************************
 * Local Variable Definitions                                                  *
 ******************************************************************************/
@@ -101,11 +106,8 @@ void sample2file( )
 
 void *ddrMem, *sharedMem;
 unsigned int *sharedMem_int;
-
-
-//andere dingen
-//static int chunk;
-
+void *DDR_paramaddr, *DDR_ackaddr;
+int mem_fd;
 
 FILE* save_file;
 
@@ -113,49 +115,71 @@ FILE* save_file;
 * Global Function Definitions                                                 *
 ******************************************************************************/
 
-int main ( ){
+int main ( )
+{    
     
-    int i;
-    void *DDR_paramaddr;
-    void *DDR_ackaddr;
-    int fin;
-    char fname_new[255];
-    
-    
-    if(initializePruss() != TRUE){
-        return(-1);
+    if(initializePruss() != 1)
+    {
+         printf("\n\n ERR: Failed Initialize PRUSS\n");
     }
-    
+    else
+    {    
+    printf("\nGOOD: PRUSS initialized\n");   
+    }
 
-    /* doe dingen */
-    save_file = fopen("samples.txt", "r+");
-    
-    /* Execute mem example */
-    printf("\tINFO: Executing example function.\r\n");
-    LOCAL_exampleInit(PRU_NUM);
-    
+    if(Init_RAM(PRU_NUM) != 0)
+    {
+        printf("\n\n ERR: Failed Initialize RAM\n");
+    }
+    else
+    {
+        printf("\nGOOD: RAM initialized\n");
+    }
+
+    printf("\n Opening samples.txt");    
+    save_file = fopen("samples.txt", "w");
+    if( save_file == NULL )
+    {
+        //#ifdef DEBUG
+	 printf("\n\nERR: kan file niet openen!\n");
+        //#endif //DEBUG
+    }
+    else 
+    {
+        printf("\nGOOD: File geopend\n");
+    }
+
     /*Execute real functionality*/
     
+    printf("\INFO: Setting pointers\n");
     DDR_paramaddr = ddrMem + OFFSET_DDR - 8;
-    DRR_ackaddr = ddrMem + OFFSET_DDR - 4;
+    DDR_ackaddr = ddrMem + OFFSET_DDR - 4;
     
+    printf("\nINFO: Schrijf iets in RAM\n");
     sharedMem_int[OFFSET_SHAREDRAM] = 0; //mean no command, not used by pru now
     
     
     /* Execute binary on PRU */
-    printf("\tINFO: Executing binary on pru.\r\n");
+    printf("\nINFO: Executing applicatie.bin on PRU1.\n");
     prussdrv_exec_program (PRU_NUM, PATH);
     
     //sleep(1);
     
     //sharedMem_int[OFFSET_SHAREDRAM] = 2; //means perform capture, also not used by pru
     
-    if(sharedMem_int[OFFSET_SHAREDRAM] == 1)    //einde pru code bereikt
-    {
+    printf("\nINFO: Wegschrijven naar samples.txt bereikt\n");
+   // if(sharedMem_int[OFFSET_SHAREDRAM] == 1)    //einde pru code bereikt
+   // {
+	printf("\nGOOD: In schrijf deel\n");        
         sample2file();
-        sharedMem_int[OFFSET_SHAREDRAM] = 0; // bit weer gereset.
-    }
-    
+   //     sharedMem_int[OFFSET_SHAREDRAM] = 0; // bit weer gereset.
+   // }
+   // else
+   // {
+        printf("\nERR: niet in schrijfdeel\n");
+   // }
+   
+
     printf("\n\nklaar?\n\n");
     
     fclose(save_file);
@@ -176,15 +200,18 @@ int main ( ){
     
     munmap(ddrMem, 0x0FFFFFFF);
     close(mem_fd);
-
-    return(0);
+	
+printf("la");
+    
+return(0);
 }
 
 /******************************************************************************
  * Local Function Definitions                                                 *
  ******************************************************************************/
 
-unsigned int initializePruss( ){
+int initializePruss( )
+{
     char var;   //wordt gebruikt om te controleren of alles goed gaat.
     unsigned int ret;
     
@@ -200,13 +227,13 @@ unsigned int initializePruss( ){
     if (ret)
     {
         printf("prussdrv_open open failed\n");
-        var = FALSE;
+        var = 0;
         return (var);
     }
     
     printf("\nINFO: PRU Interrupt Opend\n");
     
-    var = TRUE;
+    var = 1;
     /* Get the interrupt initialized */
     prussdrv_pruintc_init(&pruss_intc_initdata);
  
@@ -215,10 +242,13 @@ unsigned int initializePruss( ){
 
 
 
-int LOCAL_exampleInit ( ){
-    static int mem_fd;
-    void *DDR_regaddr1, *DDR_regaddr2, *DDR_regaddr3;
-    
+int Init_RAM( )
+{    
+    prussdrv_map_prumem(PRUSS1_SHARED_DATARAM, &sharedMem);
+    sharedMem_int = (unsigned int*) sharedMem;
+
+    printf("mem stage 1\n");
+
     /* open the device */
     mem_fd = open("/dev/mem", O_RDWR);
     if (mem_fd < 0) {
@@ -226,6 +256,8 @@ int LOCAL_exampleInit ( ){
         return -1;
     }
     
+    printf("mem stage 2\n");
+
     /* map the DDR memory */
     ddrMem = mmap(0, 0x0FFFFFFF, PROT_WRITE | PROT_READ, MAP_SHARED, mem_fd, DDR_BASEADDR);
     if (ddrMem == NULL) {
@@ -233,29 +265,23 @@ int LOCAL_exampleInit ( ){
         close(mem_fd);
         return -1;
     }
-    
-    /* Store Addends in DDR memory location */
-    DDR_regaddr1 = ddrMem + OFFSET_DDR;
-    DDR_regaddr2 = ddrMem + OFFSET_DDR + 0x00000004;
-    DDR_regaddr3 = ddrMem + OFFSET_DDR + 0x00000008;
-    
-    *(unsigned long*) DDR_regaddr1 = ADDEND1;
-    *(unsigned long*) DDR_regaddr2 = ADDEND2;
-    *(unsigned long*) DDR_regaddr3 = ADDEND3;
-    
+        
+    printf("mem stage 3\n");
     return(0);
 }
 
 
 
-void sample2file(void){
+void sample2file(void)
+{
     int x;
-    unsigned int *DDR_regaddr;
-    unsigned int *p_value;
-    unsigned int value;
+    int *DDR_regaddr;
+    int *p_value;
+    int value;
     
     DDR_regaddr = ddrMem + OFFSET_DDR;
     p_value = (unsigned int*)&sharedMem_int[OFFSET_SHAREDRAM+1];
+    
     for (x = 1; x<SAMPLES; x++)
     {
         value = *p_value;
