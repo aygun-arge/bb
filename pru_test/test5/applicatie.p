@@ -130,26 +130,6 @@ START:
 	//test of het SHARED RAM werkt
 	LBCO r0, CONST_DDR, 0, 12	//r1 t/m r3 worden gevuld met data uit het shared DDR RAM
 		
-	MOV r6, 10 			//r6 = 10 om 10x te loop-en
-GA:
-	SET D0
- 	DELAY
-	CLR D0
-	SET D1
-	DELAY
-	CLR D1
-	SET D2
-	DELAY
-	CLR D2
-	SET D3
-	DELAY
-	CLR D3
-	SET D4
-	DELAY
-	CLR D4
-	SUB r6, r6 , 1
-	QBNE GA, r6, 0			// jump naar GA wanneer r6 = niet 0
-	JMP EXIT				//Jump naar exit, geen return adress
 
 	//TODO: open buffer wanneer niet open, vervolg dan hieronder
 
@@ -177,7 +157,7 @@ SAMPLE:
 							//de adc databits staan nu in r6
 
 	SBBO r6, r7, 0, 2		//kopieer 2bytes(16 bits) van r6(ADC_sample) naar r7 (RAM adress) zonder offset
-	ADD	 r7, r7, 4			//verhoog het adres met 1 32bit waarde (4 bytes)
+	ADD	r7, r7, 4			//verhoog het adres met 1 32bit waarde (4 bytes)
 	
 	SUB  r9, r9, 1			// Trek 1 af van aan aantal te nemen samples.
 	QBNE SAMPLE, r9, 0		// Jump naar SAMPLE zolang het aantal te nemen samples niet 0 is.
