@@ -82,8 +82,8 @@
 * Local Function Declarations                                                 *
 ******************************************************************************/
 int LOCAL_exampleInit ( );
-unsigned int initializePruss(void);
-void sample2file(void)
+unsigned int initializePruss( );
+void sample2file( )
 /******************************************************************************
 * Local Variable Definitions                                                  *
 ******************************************************************************/
@@ -113,8 +113,7 @@ FILE* save_file;
 * Global Function Definitions                                                 *
 ******************************************************************************/
 
-int main (void)
-{
+int main ( ){
     
     int i;
     void *DDR_paramaddr;
@@ -187,8 +186,7 @@ int main (void)
  * Local Function Definitions                                                 *
  ******************************************************************************/
 
-unsigned int initializePruss(void)
-{
+unsigned int initializePruss( ){
     char var;   //wordt gebruikt om te controleren of alles goed gaat.
     unsigned int ret;
     
@@ -219,8 +217,7 @@ unsigned int initializePruss(void)
 
 
 
-int LOCAL_exampleInit (  )
-{
+int LOCAL_exampleInit ( ){
     static int mem_fd;
     void *DDR_regaddr1, *DDR_regaddr2, *DDR_regaddr3;
     
@@ -253,8 +250,7 @@ int LOCAL_exampleInit (  )
 
 
 
-void sample2file(void)
-{
+void sample2file(void){
     int x;
     unsigned int *DDR_regaddr;
     unsigned int *p_value;
