@@ -81,7 +81,7 @@
 /******************************************************************************
 * Local Function Declarations                                                 *
 ******************************************************************************/
-static int LOCAL_exampleInit ( );
+int LOCAL_exampleInit ( );
 unsigned int initializePruss(void);
 void sample2file(void)
 /******************************************************************************
@@ -104,7 +104,7 @@ unsigned int *sharedMem_int;
 
 
 //andere dingen
-static int chunk;
+//static int chunk;
 
 
 FILE* save_file;
@@ -219,7 +219,7 @@ unsigned int initializePruss(void)
 
 
 
-static int LOCAL_exampleInit (  )
+int LOCAL_exampleInit (  )
 {
     static int mem_fd;
     void *DDR_regaddr1, *DDR_regaddr2, *DDR_regaddr3;
