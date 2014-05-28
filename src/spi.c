@@ -6,6 +6,12 @@
 *
 * 0x7000 = 250.000 nanoseconds ( zero / off / 0 bit / 0b111000000000000 )
 * 0x7f00 = 583.333 nanoseconds ( one / on / 1 bit / 0b111111100000000 )
+*
+*
+*	ss pin (out) = P9_28 0x99c gpio113
+*	displ power down (out) = P9_23 GPIO1_17 gpio49 0x844
+*	display interrupt (in) = P9_12 GPIO1_28 gpio60 0x878
+*
 */
 
 #include <stdint.h>
