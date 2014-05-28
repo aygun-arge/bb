@@ -109,8 +109,6 @@ static int chunk;
 
 FILE* save_file;
 
-
-
 /******************************************************************************
 * Global Function Definitions                                                 *
 ******************************************************************************/
@@ -257,14 +255,14 @@ static int LOCAL_exampleInit (  )
 void sample2file(void)
 {
     unsigned short int *DDR_regaddr;
-    unsigned short int *p_value
-    unsigned short int value
+    unsigned short int *p_value;
+    unsigned short int value;
     
     DDR_regaddr = ddrMem + OFFSET_DDR;
     p_value = (unsigned short int*)&sharedMem_int[OFFSET_SHAREDRAM+1];
     for (int x = 1; x<SAMPLES; x++)
     {
-        value = *p_value
+        value = *p_value;
         fprintf(save_file," %d\n", value);
         p_value = p_value + 2;
         
