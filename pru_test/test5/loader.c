@@ -98,7 +98,7 @@ void sample2file(void)
 * Global Variable Definitions                                                 *
 ******************************************************************************/
 //ti dingen
-int mem_fd;
+static int mem_fd;
 static void *ddrMem, *sharedMem;
 static unsigned int *sharedMem_int;
 
@@ -254,13 +254,14 @@ static int LOCAL_exampleInit (  )
 
 void sample2file(void)
 {
-    unsigned short int *DDR_regaddr;
-    unsigned short int *p_value;
-    unsigned short int value;
+    int x;
+    unsigned int *DDR_regaddr;
+    unsigned int *p_value;
+    unsigned int value;
     
     DDR_regaddr = ddrMem + OFFSET_DDR;
-    p_value = (unsigned short int*)&sharedMem_int[OFFSET_SHAREDRAM+1];
-    for (int x = 1; x<SAMPLES; x++)
+    p_value = (unsigned int*)&sharedMem_int[OFFSET_SHAREDRAM+1];
+    for (x = 1; x<SAMPLES; x++)
     {
         value = *p_value;
         fprintf(save_file," %d\n", value);
