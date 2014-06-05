@@ -24,7 +24,7 @@
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
 
-#include "general.h"
+#include "devices.h"
 
 typedef uint16_t spidata_t;
 
