@@ -15,7 +15,7 @@
 .origin 0
 .entrypoint MEMACCESS_DDR_PRUSHAREDRAM
 
-#include "PRU_memAcc_DDR_sharedRAM.hp"
+#include "memtest.hp"
 
 MEMACCESS_DDR_PRUSHAREDRAM:
 

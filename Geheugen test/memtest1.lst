@@ -1,0 +1,17 @@
+memtest1.p(   20) : 0x0000 = Label      : MEMACCESS_DDR_PRUSHAREDRAM:
+memtest1.p(   23) : 0x0000 = 0x91042480 :     LBCO     r0, C4, 4, 4
+memtest1.p(   24) : 0x0001 = 0x1d04e0e0 :     CLR      r0, r0, 4
+memtest1.p(   25) : 0x0002 = 0x81042480 :     SBCO     r0, C4, 4, 4
+memtest1.p(   30) : 0x0003 = 0x240100e0 :     MOV      r0, 0x00000100
+memtest1.p(   31) : 0x0004 = 0x240002c1 :     MOV      r1, 0x24028
+memtest1.p(   31) : 0x0005 = 0x24402881 :     MOV      r1, 0x24028
+memtest1.p(   32) : 0x0006 = 0xe1002180 :     SBBO     r0, r1, #0x00, 4
+memtest1.p(   36) : 0x0007 = 0x240010c0 :     MOV      r0, 0x00100000
+memtest1.p(   36) : 0x0008 = 0x24000080 :     MOV      r0, 0x00100000
+memtest1.p(   37) : 0x0009 = 0x240002c1 :     MOV      r1, 0x2402C
+memtest1.p(   37) : 0x000a = 0x24402c81 :     MOV      r1, 0x2402C
+memtest1.p(   38) : 0x000b = 0xe1002180 :     SBBO     r0, r1, #0x00, 4
+memtest1.p(   41) : 0x000c = 0x9100bf80 :     LBCO     r0, C31, 0, 12
+memtest1.p(   44) : 0x000d = 0x8100bc80 :     SBCO     r0, C28, 0, 12
+memtest1.p(   47) : 0x000e = 0x2400241f :     MOV      r31.b0, 20+16
+memtest1.p(   50) : 0x000f = 0x2a000000 :     HALT     
