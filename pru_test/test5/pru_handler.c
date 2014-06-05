@@ -101,7 +101,7 @@
 
 static int mem_fd;                  //geheugen dingetje
 static void *ddrMem, *sharedMem;
-static int chunk;
+//static int chunk;
 static unsigned int *sharedMem_int;
 
 FILE* output;

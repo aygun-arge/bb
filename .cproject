@@ -131,6 +131,8 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.25650911" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug"/>
 							<tool command="arm-linux-gnueabi-g++-4.7" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1755895920" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
+								<option id="gnu.cpp.link.option.libs.1113749846" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs"/>
+								<option id="gnu.cpp.link.option.paths.436346757" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1759035671" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -157,6 +159,7 @@
 		<configuration configurationName="Release">
 			<resource resourceType="PROJECT" workspacePath="/BeagleBone"/>
 		</configuration>
+		<configuration configurationName="Debug_BB"/>
 		<configuration configurationName="Debug">
 			<resource resourceType="PROJECT" workspacePath="/BeagleBone"/>
 		</configuration>

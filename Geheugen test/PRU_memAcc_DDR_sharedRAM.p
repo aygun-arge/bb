@@ -89,7 +89,7 @@ MEMACCESS_DDR_PRUSHAREDRAM:
     SBCO      r0, CONST_PRUSHAREDRAM, 0, 12
 
     // Send notification to Host for program completion
-    MOV       r31.b0, PRU0_ARM_INTERRUPT+16
+    MOV       r31.b0, PRU1_ARM_INTERRUPT+16
 
     // Halt the processor
     HALT
