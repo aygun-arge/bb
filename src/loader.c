@@ -59,7 +59,7 @@
 * Local Macro Declarations                                                    *
 ******************************************************************************/
 
-#define PATH		"memtest.bin" // ./ Hier de filenaam aanpassen
+#define PATH		"./memtest1.bin" // ./ Hier de filenaam aanpassen
 
 #define PRU_1		1
 #define PRU_0		0
@@ -67,9 +67,9 @@
 #define PRU_NUM 	PRU_1		// hier instellen welke PRU core gebruikt moet worden
 					// N.B. ook de interrupt vectoren corrigeren op de pru core keuze
 
-#define DDR_BASEADDR    0x80000000
-#define OFFSET_DDR      0x00001008
-#define OFFSET_SHAREDRAM 4
+#define DDR_BASEADDR     0x80000000
+#define OFFSET_DDR       0x00001000
+#define OFFSET_SHAREDRAM 0x00000000 //x2000 voor RAM1 pru0, RAM0 voor pru 1
 #define PRUSS1_SHARED_DATARAM 4
 #define SAMPLES 100
 
@@ -93,7 +93,7 @@
 int initializePruss( );
 void sample2file(void);
 int RAM_init( );
-int verify_feedback ( );
+unsigned int verify_feedback ( );
 
 /******************************************************************************
 * Local Variable Definitions                                                  *
@@ -147,10 +147,19 @@ int main ( )
         prussdrv_pru_clear_event (PRU_EVTOUT_1, PRU1_ARM_INTERRUPT);
         printf("\n interrupt terug\n");
 
-        if((verify_feedback()) != 0)
+       // if((verify_feedback()) != 0)
+       // {
+       // 	printf("ERR:: fout tussen PRU en geheugen\n");
+       // 	return -1;
+       //}
+
+        if(verify_feedback())
         {
-        	printf("ERR:: fout tussen PRU en geheugen\n");
-        	return -1;
+        	printf("verif correct");
+        }
+        else
+        {
+        	printf("verif failed");
         }
 
         prussdrv_pru_disable(PRU_1);
@@ -279,6 +288,7 @@ int RAM_init( )
 	if((ddrMem = mmap(0, 0x0FFFFFFF, PROT_WRITE | PROT_READ, MAP_SHARED, mem_fd, DDR_BASEADDR)) == NULL )
 	{
 		printf("INIT_RAM:: Mapping geheugen niet gelukt\n");
+		close(mem_fd);
 		return -1;
 	}
 
@@ -296,7 +306,7 @@ int RAM_init( )
 	return 0;
 }
 
-int verify_feedback ( )
+unsigned int verify_feedback ( )
 {
 	printf("in veri\n");
 	unsigned int return1, return2, return3;
@@ -309,17 +319,19 @@ int verify_feedback ( )
 	return2 = sharedMem_int[OFFSET_SHAREDRAM + 1];
 	return3 = sharedMem_int[OFFSET_SHAREDRAM + 2];
 	printf("in veri3\n");
-	if( (return1 == ADDEND1) & (return2 == ADDEND2) &(return3 == ADDEND3) )
+
+	/*if( (return1 == ADDEND1) & (return2 == ADDEND2) &(return3 == ADDEND3) )
 	{
-		printf("VERIF:: geheugen is correct terug gelezen %d %d %d\n", return1, return2, return3);
+		printf("VERIF:: geheugen is correct terug gelezen %#08x %#08x %#08x\n", return1, return2, return3);
 		return 0;
 	}
 	else
 	{
-		printf("VERIF:: geheugen is niet correct terug gelezen");
+		printf("VERIF:: geheugen is niet correct terug gelezen %#08x %#08x %#08x\n", return1, return2, return3);
 		return -1;
 	}
-
+*/
+	return((return1 == ADDEND1)&(return2 == ADDEND2)&(return3 == ADDEND3));
 }
 
 
