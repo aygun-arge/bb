@@ -1,5 +1,5 @@
 /*
- * loader.c
+ * loader.c lalalalalal
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -140,32 +140,24 @@ int main ( )
 
     prussdrv_exec_program (PRU_1, PATH); // voer binary uit op pru
 
-        printf("\n na execute \n");
+    printf("\n na execute \n");
 
-        //wacht op halt commando en clear interrupt
-        prussdrv_pru_wait_event (PRU_EVTOUT_1);
-        prussdrv_pru_clear_event (PRU_EVTOUT_1, PRU1_ARM_INTERRUPT);
-        printf("\n interrupt terug\n");
+    //wacht op halt commando en clear interrupt
+    prussdrv_pru_wait_event (PRU_EVTOUT_1);
+    prussdrv_pru_clear_event (PRU_EVTOUT_1, PRU1_ARM_INTERRUPT);
+    printf("\n interrupt terug\n");
 
-       // if((verify_feedback()) != 0)
-       // {
-       // 	printf("ERR:: fout tussen PRU en geheugen\n");
-       // 	return -1;
-       //}
+    if((verify_feedback()) != 0)
+    {
+      	printf("ERR:: fout tussen PRU en geheugen\n");
+       	return -1;
+    }
 
-        if(verify_feedback())
-        {
-        	printf("verif correct");
-        }
-        else
-        {
-        	printf("verif failed");
-        }
 
-        prussdrv_pru_disable(PRU_1);
-        prussdrv_exit();
-        munmap(ddrMem, 0x0FFFFFFF);
-        close(mem_fd);
+    prussdrv_pru_disable(PRU_1);
+    prussdrv_exit();
+    munmap(ddrMem, 0x0FFFFFFF);
+    close(mem_fd);
 
 
 #ifndef DEBUG
@@ -238,8 +230,8 @@ int main ( )
 printf("la");
 #endif
 
-printf("klaar");
-return 0;
+	printf("klaar");
+	return 0;
 }
 
 /******************************************************************************
@@ -308,19 +300,16 @@ int RAM_init( )
 
 unsigned int verify_feedback ( )
 {
-	printf("in veri\n");
 	unsigned int return1, return2, return3;
 
 	prussdrv_map_prumem(PRUSS1_SHARED_DATARAM, &sharedMem);
-	printf("in veri2\n");
 	sharedMem_int = (unsigned int*) sharedMem;
 
 	return1 = sharedMem_int[OFFSET_SHAREDRAM];
 	return2 = sharedMem_int[OFFSET_SHAREDRAM + 1];
 	return3 = sharedMem_int[OFFSET_SHAREDRAM + 2];
-	printf("in veri3\n");
 
-	/*if( (return1 == ADDEND1) & (return2 == ADDEND2) &(return3 == ADDEND3) )
+	if( (return1 == ADDEND1) & (return2 == ADDEND2) &(return3 == ADDEND3) )
 	{
 		printf("VERIF:: geheugen is correct terug gelezen %#08x %#08x %#08x\n", return1, return2, return3);
 		return 0;
@@ -330,8 +319,6 @@ unsigned int verify_feedback ( )
 		printf("VERIF:: geheugen is niet correct terug gelezen %#08x %#08x %#08x\n", return1, return2, return3);
 		return -1;
 	}
-*/
-	return((return1 == ADDEND1)&(return2 == ADDEND2)&(return3 == ADDEND3));
 }
 
 
