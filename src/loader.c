@@ -352,7 +352,7 @@ int Init_RAM( )
 }
 */
 
-/*
+
 void sample2file(void)
 {
     int x;
@@ -366,18 +366,16 @@ void sample2file(void)
     for (x = 1; x<SAMPLES; x++)
     {
         value = *p_value;
-	value = value & 0xfff; //alleen eerste 12 bits
-	printf("%d    %d \n", x, value);
+        value = value & 0xfff; //alleen eerste 12 bits
+        printf("%d    %d \n", x, value);
         fprintf(save_file," %d\n", value);
-        p_value++;
-	p_value++;
-
+        p_value = p_value + 2;
     }
 
     printf("\n saved data\n");
 
 }
-*/
+
 
 
 
