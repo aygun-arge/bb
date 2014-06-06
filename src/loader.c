@@ -72,7 +72,7 @@
 #define OFFSET_DDR       0x00001000
 #define OFFSET_SHAREDRAM 0x00000000 //x2000 voor RAM1 pru0, RAM0 voor pru 1
 #define PRUSS1_SHARED_DATARAM 4
-#define SAMPLES 256
+#define SAMPLES 512
 
 #define TRUE 1
 #define FALSE 0
@@ -125,7 +125,7 @@ int test;
 
 int main ( )
 {
-
+int p = 0;
     if(initializePruss() != 0)
     {
          printf("ERR:: PRUSS not initialized\n");
@@ -178,20 +178,39 @@ int main ( )
 
     //wacht tot pru iets heeft gedaan (1 sec = 200.000.000 instructies, dus pru waarschijnlijk klaar).
 
-    while(sharedMem_int[OFFSET_SHAREDRAM]!= 0x03)
-    {
-    	printf("waiting!!!\r");
+    ///while(sharedMem_int[OFFSET_SHAREDRAM]!= 0x03)
+    //{
+   // 	printf("waiting!!!\r");
     	//usleep(1);
-    }
+    //}
 
-    printf("\nPRU klaar \n");
-
-    if(Save_Samples() != 0)
+    printf("\nPRU 1 \n");
+    sleep(5);
+    printf("\nPRU 2 \n");
+    do
     {
-    	printf("Sample save mislukt\n");
-    }
+        printf("\nPRU 3 \n");
+    	if (sharedMem_int[OFFSET_SHAREDRAM] == 0x03)
+    	{
+    	    printf("\nPRU 4 \n");
+    		if(Save_Samples() != 0)
+    	    {
+    	    	printf("Sample save mislukt\n");
+    	    }
+    	    sharedMem_int[OFFSET_SHAREDRAM] = 0x04;
+    	    p = 1;
+    	    printf("\ndone\n");
+    	}
 
-    sharedMem_int[OFFSET_SHAREDRAM] = 0x04;
+    }while (!p);
+
+
+    //if(Save_Samples() != 0)
+    //{
+    //	printf("Sample save mislukt\n");
+    //}
+
+   // sharedMem_int[OFFSET_SHAREDRAM] = 0x04;
 
     //wacht op halt commando en clear interrupt
     prussdrv_pru_wait_event (PRU_EVTOUT_1);
