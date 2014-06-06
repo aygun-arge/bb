@@ -33,22 +33,6 @@
 #define OFFSET_USR0 1<<21
 #define ADC_BUFFER  1<<29
 
-.macro DELAY
-DELAY:	
-	MOV r1, 20000000
-DEL:
-	SUB r1, r1, 1
-	QBNE DEL, r1, 0
-.endm
-
-.macro SHORT_DELAY
-SHORT_DELAY:	
-	MOV r1, 2000
-S_DEL:
-	SUB r1, r1, 1
-	QBNE S_DEL, r1, 0
-.endm
-
 .macro BUFFER_DISABLE
        MOV r2, ADC_BUFFER
        MOV r3, GPIO1 | GPIO_SETDATAOUT

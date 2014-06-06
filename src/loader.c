@@ -59,7 +59,7 @@
 * Local Macro Declarations                                                    *
 ******************************************************************************/
 
-#define PATH		"./memtest1.bin" // ./ Hier de filenaam aanpassen
+#define PATH		"./sample.bin" // ./ Hier de filenaam aanpassen
 #define FILENAME	"SAMPLES.txt"	// hier filenaam en extentie aanpassen
 
 #define PRU_1		1
@@ -162,8 +162,8 @@ int main ( )
     }
     //stuur start sample commando naar pru 0x02 op sharedmem[offset+0]
     printf("INFO:: reply correct\n\n");
-    sharedMem_int[OFFSET_SHAREDRAM]=SAMPLES;
-    sharedMem_int[OFFSET_SHAREDRAM]=0x02;
+    sharedMem_int[OFFSET_SHAREDRAM + 3] = SAMPLES;
+    sharedMem_int[OFFSET_SHAREDRAM] = 0x02;
     //wacht tot pru iets heeft gedaan (1 sec = 200.000.000 instructies, dus pru waarschijnlijk klaar).
     sleep(1);
 
@@ -339,7 +339,7 @@ int Save_Samples ( )
         fprintf(save_file,"%d,\t%d,\t%#016x \n", x, value, value);
         p_value = p_value + 2;
     }
-
+    close(save_file);
     printf("SAVE:: Data geschreven in %s", FILENAME);
 
     return 0;
