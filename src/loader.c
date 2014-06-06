@@ -72,7 +72,7 @@
 #define OFFSET_DDR       0x00001000
 #define OFFSET_SHAREDRAM 0x00000000 //x2000 voor RAM1 pru0, RAM0 voor pru 1
 #define PRUSS1_SHARED_DATARAM 4
-#define SAMPLES 100
+#define SAMPLES 256
 
 #define TRUE 1
 #define FALSE 0
@@ -116,6 +116,8 @@ unsigned int *sharedMem_int;
 void *DDR_paramaddr, *DDR_ackaddr;
 int *Shared_addr;
 int mem_fd;
+int blabla;
+int test;
 
 /******************************************************************************
 * Global Function Definitions                                                 *
@@ -153,24 +155,33 @@ int main ( )
 
     //stuur een ack voor pru op shared mem locatie 3 (vanaf 0)
     sharedMem_int[OFFSET_SHAREDRAM + 3] = 0x01u;
-    usleep(30);
-    if((sharedMem_int[OFFSET_SHAREDRAM]!=0x01)&(sharedMem_int[OFFSET_SHAREDRAM + 3]!= 0x00))
+
+#ifndef DEBUG
+    for(test = 0; test < 5; test++)
     {
-    	printf("no reply pru\n");
+    	blabla = sharedMem_int[OFFSET_SHAREDRAM + test];
+    	printf("\n%d, %#08x\n", test, blabla);
+    }
+#endif
+
+    while((sharedMem_int[OFFSET_SHAREDRAM]!=0x01)&&(sharedMem_int[OFFSET_SHAREDRAM + 3]!= 0x08))
+    {
+    	printf("\rno reply pru yet");
     	//stop de pru?
-    	return -1;
+    	//return -1;
     }
     //stuur start sample commando naar pru 0x02 op sharedmem[offset+0]
     printf("INFO:: reply correct\n\n");
+
     sharedMem_int[OFFSET_SHAREDRAM + 3] = SAMPLES;
     sharedMem_int[OFFSET_SHAREDRAM] = 0x02;
+
     //wacht tot pru iets heeft gedaan (1 sec = 200.000.000 instructies, dus pru waarschijnlijk klaar).
-    sleep(1);
 
     while(sharedMem_int[OFFSET_SHAREDRAM]!= 0x03)
     {
     	printf("waiting!!!\r");
-    	usleep(1);
+    	//usleep(1);
     }
 
     printf("\nPRU klaar \n");
@@ -291,11 +302,11 @@ unsigned int test_match ( )
 		printf("VERIF:: geheugen is correct terug gelezen %#08x %#08x %#08x\n", return1, return2, return3);
 
 		//Zet inhoud shared geheugen terug naar 0
-		sharedMem_int[OFFSET_SHAREDRAM] = 0;
-		sharedMem_int[OFFSET_SHAREDRAM + 1] = 0;
-		sharedMem_int[OFFSET_SHAREDRAM + 2] = 0;
-		sharedMem_int[OFFSET_SHAREDRAM + 3] = 0;
-		sharedMem_int[OFFSET_SHAREDRAM + 4] = 0;
+		//sharedMem_int[OFFSET_SHAREDRAM] = 0;
+		//sharedMem_int[OFFSET_SHAREDRAM + 1] = 0;
+		//sharedMem_int[OFFSET_SHAREDRAM + 2] = 0;
+		//sharedMem_int[OFFSET_SHAREDRAM + 3] = 0;
+		//sharedMem_int[OFFSET_SHAREDRAM + 4] = 0;
 		return 0;
 	}
 	else
@@ -304,7 +315,6 @@ unsigned int test_match ( )
 		return -1;
 	}
 }
-
 
 int Save_Samples ( )
 {

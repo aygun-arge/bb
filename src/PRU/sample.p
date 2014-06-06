@@ -150,7 +150,7 @@ SAMPLE:
     //AND r6, r4, r8	//r6 bevat nu het and van r2 (de kopie van r31 (binaire waarde) en het bitmask. In principe alleen 
 			//de adc databits staan nu in r6
 
-    SBBO r6, r7, 0, 2	//kopieer 2bytes(16 bits) van r6(ADC_sample) naar r7 (RAM adress) zonder offset
+    SBBO r2, r7, 0, 2	//kopieer 2bytes(16 bits) van r6(ADC_sample) naar r7 (RAM adress) zonder offset
     ADD	 r7, r7, 4	//verhoog het adres met 1 32bit waarde (4 bytes)
 	
     SUB  r9, r9, 1	// Trek 1 af van aan aantal te nemen samples.
