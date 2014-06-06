@@ -48,7 +48,7 @@
 #include "memtest.hp"
 #include "pru_sander.hp"
 
-#define ADCMASK 0x00000fff //masker [11:0]
+#define ADC_MASK 0x00000fff //masker [11:0]
 
 //locatie in geheugen van cmd tussen pru en am335x
 #define CMD 0x00010000
@@ -57,6 +57,9 @@
 #define RES_RAM 0x00010004
 
 #define SAMPLES 100
+
+#define ADC_CLK r31.t16
+
 BEGIN:
 
     // Enable OCP master port
@@ -89,10 +92,11 @@ BEGIN:
     BUFFER_DISABLE
     //zet macros in register zodat bewerkelijkheid beter is.
     MOV r7,	RES_RAM
-    MOV r8,	ADCMASK
+    MOV r8,	ADC_MASK
     //MOV r9,	SAMPLES
 
-    ADD r12,	CONST_PRUSHAREDRAM, 3 //offset 4.
+    MOV r12, 	CONST_PRUSHAREDRAM
+    ADD r12, r12, 3
 
 WAIT_FI:
     MOV r11,	CMD
