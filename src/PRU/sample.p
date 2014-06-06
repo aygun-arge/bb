@@ -93,37 +93,47 @@ BEGIN:
     //zet macros in register zodat bewerkelijkheid beter is.
     MOV r7,	RES_RAM
     MOV r8,	ADC_MASK
-    //MOV r9,	SAMPLES
-
-    MOV r12, 	CONST_PRUSHAREDRAM
-    ADD r12, r12, 3
 
 WAIT_FI:
     MOV r11,	CMD
 
 INS_LOOP:
-    DELAY
-    LBCO r13, r12, 0, 4
-    //LBCO r13, CONST_PRUSHAREDRAM, 4, 4
+    SHORT_DELAY
+
+//    MOV r1, 0x6
+//    MOV r2, 0xf
+//    MOV r3, 0x2
+//    MOV r4, 0xc
+//    SBCO r2, CONST_PRUSHAREDRAM, 4, 4
+//    SBCO r3, CONST_PRUSHAREDRAM, 8, 4
+//    SBCO r4, CONST_PRUSHAREDRAM, 12, 4
+//    SBCO r1, CONST_PRUSHAREDRAM, 0, 4
+
+    LBCO r13, CONST_PRUSHAREDRAM, 12, 4
     QBNE INS_LOOP, r13, 1 //blijf loop-en tot instructie op r13 1 wordt
-    MOV r4, 0x01 //r4 = 1
-    MOV r3, 0x00 //r3 = 0   
-    SBCO r3, r12, 0, 4
-    //SBCO r4, CONST_PRUSHAREDRAM, 4, 4
-    SBCO r4, CONST_PRUSHAREDRAM, 0, 4
-    //sharedram0 = 1, sharedram3 = 0
+   
+    MOV r3,  0x01 // r3 = 8
+    SBCO r3, CONST_PRUSHAREDRAM, 0, 4
+    MOV  r4, 0x08
+    SBCO r4, CONST_PRUSHAREDRAM, 12, 4
+    //sharedram0 = 1, sharedram3 = 8
+
 WAIT_FS:
     SHORT_DELAY
-    LBCO r9, r12, 0, 4
+    //get ammount samples
+    LBCO r9, CONST_PRUSHAREDRAM, 12, 4
+    //get start command
     LBCO r13, CONST_PRUSHAREDRAM, 0, 4
     QBNE WAIT_FS, r13, 0x02
 
 SAMPLING:
     BUFFER_ENABLE
-    SBCO r3, r12, 0, 4 //maak sharedmem3 0 to be sure.
+    MOV r3, 0
+    SBCO r3, CONST_PRUSHAREDRAM, 12, 4 //maak getal dingetje 0 to be sure
 
     //voor het nette zou de adc latency geset kunnen worden.
     //voor mij echt niet boeiend, dus ga dit niet doen.
+
 SAMPLE:
     // om rising edge te detecteren, controlleer of clk laag is
     WBC ADC_CLK				
@@ -137,7 +147,7 @@ SAMPLE:
     MOV r2, r31				
     MOV r2, r31		//r2 is nu een realtime kopie van r31
 	
-    AND r6, r4, r8	//r6 bevat nu het and van r2 (de kopie van r31 (binaire waarde) en het bitmask. In principe alleen 
+    //AND r6, r4, r8	//r6 bevat nu het and van r2 (de kopie van r31 (binaire waarde) en het bitmask. In principe alleen 
 			//de adc databits staan nu in r6
 
     SBBO r6, r7, 0, 2	//kopieer 2bytes(16 bits) van r6(ADC_sample) naar r7 (RAM adress) zonder offset
@@ -152,7 +162,7 @@ SAMPLE:
     SBCO r1, CONST_PRUSHAREDRAM, 0, 4
 
 WAIT_FOR_EXIT:
-    DELAY
+    SHORT_DELAY
     LBCO r1, CONST_PRUSHAREDRAM, 0, 4
     QBNE WAIT_FOR_EXIT, r1, 0x04
 
@@ -161,5 +171,3 @@ EXIT:
     MOV       r31.b0, PRU1_ARM_INTERRUPT+16
     // Halt the processor
     HALT
-
-
