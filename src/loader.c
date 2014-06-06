@@ -60,6 +60,7 @@
 ******************************************************************************/
 
 #define PATH		"./memtest1.bin" // ./ Hier de filenaam aanpassen
+#define FILENAME	"SAMPLES.txt"	// hier filenaam en extentie aanpassen
 
 #define PRU_1		1
 #define PRU_0		0
@@ -91,9 +92,9 @@
 ******************************************************************************/
 //int Init_RAM( );
 int initializePruss( );
-void sample2file(void);
-int RAM_init( );
-unsigned int verify_feedback ( );
+int Save_Samples ( );
+int PRUSS_RAM_init( );
+unsigned int test_match ( );
 
 /******************************************************************************
 * Local Variable Definitions                                                  *
@@ -113,9 +114,8 @@ unsigned int verify_feedback ( );
 void *ddrMem, *sharedMem;
 unsigned int *sharedMem_int;
 void *DDR_paramaddr, *DDR_ackaddr;
+int *Shared_addr;
 int mem_fd;
-
-FILE* save_file;
 
 /******************************************************************************
 * Global Function Definitions                                                 *
@@ -130,7 +130,7 @@ int main ( )
          return -1;
     }
 
-    if(RAM_init() != 0)
+    if(PRUSS_RAM_init() != 0)
     {
         printf("ERR:: MEM not propperly initialized\n");
         return -1;
@@ -142,93 +142,60 @@ int main ( )
 
     printf("\n na execute \n");
 
+    usleep(1000); //wacht 1 mSec
+    if((test_match()) != 0)
+    {
+       	printf("ERR:: fout tussen PRU en geheugen\n");
+        return -1;
+    }
+
+    printf("INFO:: Memory matching goed, shared ram gecleared!\n");
+
+    //stuur een ack voor pru op shared mem locatie 3 (vanaf 0)
+    sharedMem_int[OFFSET_SHAREDRAM + 3] = 0x01u;
+    usleep(30);
+    if((sharedMem_int[OFFSET_SHAREDRAM]!=0x01)&(sharedMem_int[OFFSET_SHAREDRAM + 3]!= 0x00))
+    {
+    	printf("no reply pru\n");
+    	//stop de pru?
+    	return -1;
+    }
+    //stuur start sample commando naar pru 0x02 op sharedmem[offset+0]
+    printf("INFO:: reply correct\n\n");
+    sharedMem_int[OFFSET_SHAREDRAM]=SAMPLES;
+    sharedMem_int[OFFSET_SHAREDRAM]=0x02;
+    //wacht tot pru iets heeft gedaan (1 sec = 200.000.000 instructies, dus pru waarschijnlijk klaar).
+    sleep(1);
+
+    while(sharedMem_int[OFFSET_SHAREDRAM]!= 0x03)
+    {
+    	printf("waiting!!!\r");
+    	usleep(1);
+    }
+
+    printf("\nPRU klaar \n");
+
+    if(Save_Samples() != 0)
+    {
+    	printf("Sample save mislukt\n");
+    }
+
+    sharedMem_int[OFFSET_SHAREDRAM] = 0x04;
+
     //wacht op halt commando en clear interrupt
     prussdrv_pru_wait_event (PRU_EVTOUT_1);
+
     prussdrv_pru_clear_event (PRU_EVTOUT_1, PRU1_ARM_INTERRUPT);
     printf("\n interrupt terug\n");
 
-    if((verify_feedback()) != 0)
-    {
-      	printf("ERR:: fout tussen PRU en geheugen\n");
-       	return -1;
-    }
-
-
     prussdrv_pru_disable(PRU_1);
+    //clear geheugen voor de zekerheid
+	sharedMem_int[OFFSET_SHAREDRAM] = 0;
+	sharedMem_int[OFFSET_SHAREDRAM + 3] = 0;
+
     prussdrv_exit();
     munmap(ddrMem, 0x0FFFFFFF);
     close(mem_fd);
-
-
-#ifndef DEBUG
-
-   // printf("\n Opening samples.txt");
-   // save_file = fopen("samples.txt", "w");
-   // if( save_file == NULL )
-   // {
-   //     //#ifdef DEBUG
-   //printf("\n\nERR: kan file niet openen!\n");
-        //#endif //DEBUG
-   // }
-   // else
-   // {
-   //     printf("\nGOOD: File geopend\n");
-   // }
-
-    //Execute real functionality/
-
-    printf("\INFO: Setting pointers\n");
-    DDR_paramaddr = ddrMem + OFFSET_DDR - 8;
-    DDR_ackaddr = ddrMem + OFFSET_DDR - 4;
-
-    printf("\nINFO: Schrijf iets in RAM\n");
-    sharedMem_int[OFFSET_SHAREDRAM] = 0; //means no command, not used by pru now
-
-
-    // Execute binary on PRU
-    printf("\nINFO: Executing applicatie.bin on PRU1.\n");
-    prussdrv_exec_program (PRU_NUM, PATH);
-
-    //sleep(1);
-
-    //sharedMem_int[OFFSET_SHAREDRAM] = 2; //means perform capture, also not used by pru
-
-    printf("\nINFO: Wegschrijven naar samples.txt bereikt\n");
-   // if(sharedMem_int[OFFSET_SHAREDRAM] == 1)    //einde pru code bereikt
-   // {
-	printf("\nGOOD: In schrijf deel\n");
-        sample2file();
-   //     sharedMem_int[OFFSET_SHAREDRAM] = 0; // bit weer gereset.
-   // }
-   // else
-   // {
-        printf("\nERR: niet in schrijfdeel\n");
-   // }
-
-
-    printf("\n\nklaar?\n\n");
-
-    fclose(save_file);
-
-
-
-    // Wait until PRU0 has finished execution //
-    printf("\tINFO: Waiting for HALT command.\r\n");
-//    prussdrv_pru_wait_event (PRU_EVTOUT_1);
-    printf("\tINFO: PRU completed transfer.\r\n");
-//    prussdrv_pru_clear_event (PRU_EVTOUT_1, PRU1_ARM_INTERRUPT);
-
-
-
-    // Disable PRU and close memory mapping/
-    prussdrv_pru_disable(PRU_NUM);
-    prussdrv_exit ();
-
-    munmap(ddrMem, 0x0FFFFFFF);
-    close(mem_fd);
-
-printf("la");
-#endif
 
 	printf("klaar");
 	return 0;
@@ -265,11 +232,9 @@ int initializePruss( )
     return(returnx);
 }
 
-
-int RAM_init( )
+int PRUSS_RAM_init( )
 {
-	void *DDR_regaddr1, *DDR_regaddr2, *DDR_regaddr3;	//maak aantal pointers zonder dataformaat
-
+	//Open het memory
 	if((mem_fd = open(MEM, O_RDWR)) < 0) //Openening memory in READWRITE mode
 	{
 		printf("INIT_RAM:: geheugen niet geopend!\n");
@@ -284,6 +249,30 @@ int RAM_init( )
 		return -1;
 	}
 
+	//map het Shared MEM van PRU
+	prussdrv_map_prumem(PRUSS1_SHARED_DATARAM, &sharedMem);
+	sharedMem_int = (unsigned int*) sharedMem;
+
+	DDR_paramaddr = ddrMem + OFFSET_DDR - 8;
+	DDR_ackaddr = ddrMem + OFFSET_DDR - 4;
+
+	//Zet inhoud shared geheugen naar 0
+	sharedMem_int[OFFSET_SHAREDRAM] = 0;
+	sharedMem_int[OFFSET_SHAREDRAM + 1] = 0;
+	sharedMem_int[OFFSET_SHAREDRAM + 2] = 0;
+	sharedMem_int[OFFSET_SHAREDRAM + 3] = 0;
+	sharedMem_int[OFFSET_SHAREDRAM + 4] = 0;
+
+	printf("INIT_RAM:: mapping DDR en Shared voltooid\n");
+
+	return 0;
+}
+
+unsigned int test_match ( )
+{
+	void *DDR_regaddr1, *DDR_regaddr2, *DDR_regaddr3;	//maak aantal pointers zonder dataformaat
+	unsigned int return1, return2, return3;
+
 	//Zet de waarden van ADDEND1 in geheugen.
 	DDR_regaddr1 = ddrMem + OFFSET_DDR;
 	DDR_regaddr2 = ddrMem + OFFSET_DDR + 0x04;
@@ -293,18 +282,6 @@ int RAM_init( )
 	*(unsigned long*) DDR_regaddr2 = ADDEND2;
 	*(unsigned long*) DDR_regaddr3 = ADDEND3;
 
-	printf("INIT_RAM:: mapping voltooid, data geschreven\n");
-
-	return 0;
-}
-
-unsigned int verify_feedback ( )
-{
-	unsigned int return1, return2, return3;
-
-	prussdrv_map_prumem(PRUSS1_SHARED_DATARAM, &sharedMem);
-	sharedMem_int = (unsigned int*) sharedMem;
-
 	return1 = sharedMem_int[OFFSET_SHAREDRAM];
 	return2 = sharedMem_int[OFFSET_SHAREDRAM + 1];
 	return3 = sharedMem_int[OFFSET_SHAREDRAM + 2];
@@ -312,6 +289,13 @@ unsigned int verify_feedback ( )
 	if( (return1 == ADDEND1) & (return2 == ADDEND2) &(return3 == ADDEND3) )
 	{
 		printf("VERIF:: geheugen is correct terug gelezen %#08x %#08x %#08x\n", return1, return2, return3);
+
+		//Zet inhoud shared geheugen terug naar 0
+		sharedMem_int[OFFSET_SHAREDRAM] = 0;
+		sharedMem_int[OFFSET_SHAREDRAM + 1] = 0;
+		sharedMem_int[OFFSET_SHAREDRAM + 2] = 0;
+		sharedMem_int[OFFSET_SHAREDRAM + 3] = 0;
+		sharedMem_int[OFFSET_SHAREDRAM + 4] = 0;
 		return 0;
 	}
 	else
@@ -322,57 +306,43 @@ unsigned int verify_feedback ( )
 }
 
 
-/*
-int Init_RAM( )
+int Save_Samples ( )
 {
-    prussdrv_map_prumem(PRUSS1_SHARED_DATARAM, &sharedMem);
-    sharedMem_int = (unsigned int*) sharedMem;
-
-    printf("mem stage 1\n");
-
-    // open the device
-    mem_fd = open("/dev/mem", O_RDWR);
-    if (mem_fd < 0) {
-        printf("Failed to open /dev/mem (%s)\n", strerror(errno));
-        return -1;
-    }
-
-    printf("mem stage 2\n");
-
-    //map the DDR memory
-    ddrMem = mmap(0, 0x0FFFFFFF, PROT_WRITE | PROT_READ, MAP_SHARED, mem_fd, DDR_BASEADDR);
-    if (ddrMem == NULL) {
-        printf("Failed to map the device (%s)\n", strerror(errno));
-        close(mem_fd);
-        return -1;
-    }
-
-    printf("mem stage 3\n");
-    return(0);
-}
-*/
-
-
-void sample2file(void)
-{
+    unsigned short int *p_value;//16 bits
+    unsigned short int value;	//16 bits
     int x;
-    int *DDR_regaddr;
-    int *p_value;
-    int value;
 
-    DDR_regaddr = ddrMem + OFFSET_DDR;
-    p_value = (unsigned int*)&sharedMem_int[OFFSET_SHAREDRAM+1];
+    FILE* save_file;
+
+    printf("SAVE:: Open : %s in write mode\n", FILENAME);
+
+    if((save_file = fopen(FILENAME, "w")) == NULL)
+    {
+    	printf("ERR_SAVE:: Kan %s niet openen!\n", FILENAME);
+    	return -1;
+    }
+    printf("SAVE:: File correct geopend, start sampling\n");
+
+    //Neem zoveel samples als aangegeven in macro SAMPLES en AND deze om alleen de 12 bits te krijgen
+    printf("This file named: %s contains sample values, use with caution!\n", FILENAME);
+    fprintf(save_file,"This file named: %s contains sample values, use with caution!\n", FILENAME);
+
+    printf("nummer,\t int,\t hex \n");
+    fprintf(save_file,"nummer,\t int,\t hex \n");
 
     for (x = 1; x<SAMPLES; x++)
     {
         value = *p_value;
         value = value & 0xfff; //alleen eerste 12 bits
-        printf("%d    %d \n", x, value);
-        fprintf(save_file," %d\n", value);
+        //weergeef samplenummer, de int waarde en de hex waarde.
+        printf("%d,\t%d,\t%#016x \n", x, value, value);
+        fprintf(save_file,"%d,\t%d,\t%#016x \n", x, value, value);
         p_value = p_value + 2;
     }
 
-    printf("\n saved data\n");
+    printf("SAVE:: Data geschreven in %s", FILENAME);
+
+    return 0;
 
 }
 
