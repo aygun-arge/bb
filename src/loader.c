@@ -72,7 +72,7 @@
 #define OFFSET_DDR       0x00001000
 #define OFFSET_SHAREDRAM 0x00000000 //x2000 voor RAM1 pru0, RAM0 voor pru 1
 #define PRUSS1_SHARED_DATARAM 4
-#define SAMPLES 512
+#define SAMPLES 120
 
 #define TRUE 1
 #define FALSE 0
@@ -125,6 +125,10 @@ int test;
 
 int main ( )
 {
+	gpio_export(ADC_BUF);
+	gpio_set_dir(ADC_BUF, OUTPUT);
+	gpio_set_value(ADC_BUF, HIGH);
+
 int p = 0;
     if(initializePruss() != 0)
     {
@@ -172,7 +176,7 @@ int p = 0;
     }
     //stuur start sample commando naar pru 0x02 op sharedmem[offset+0]
     printf("INFO:: reply correct\n\n");
-
+    gpio_set_value(ADC_BUF, LOW);
     sharedMem_int[OFFSET_SHAREDRAM + 3] = SAMPLES;
     sharedMem_int[OFFSET_SHAREDRAM] = 0x02;
 
@@ -216,6 +220,7 @@ int p = 0;
     prussdrv_pru_wait_event (PRU_EVTOUT_1);
 
     prussdrv_pru_clear_event (PRU_EVTOUT_1, PRU1_ARM_INTERRUPT);
+    gpio_set_value(ADC_BUF, HIGH);
     printf("\n interrupt terug\n");
 
     prussdrv_pru_disable(PRU_1);
@@ -338,8 +343,11 @@ unsigned int test_match ( )
 int Save_Samples ( )
 {
     unsigned short int *p_value;//16 bits
+    unsigned short int *Register_Address;
     unsigned short int value;	//16 bits
     int x;
+
+    p_value = (unsigned short int*)&sharedMem_int[OFFSET_SHAREDRAM+1];
 
     FILE* save_file;
 
@@ -362,9 +370,9 @@ int Save_Samples ( )
     for (x = 1; x<SAMPLES; x++)
     {
         value = *p_value;
-        value = value & 0xfff; //alleen eerste 12 bits
+        //value = value & 0xfff; //alleen eerste 12 bits
         //weergeef samplenummer, de int waarde en de hex waarde.
-        printf("%d,\t%d,\t%#016x \n", x, value, value);
+        printf("%d,\t%d,\t%#016x, \t %#016x \n", x, value, value, p_value);
         fprintf(save_file,"%d,\t%d,\t%#016x \n", x, value, value);
         p_value = p_value + 2;
     }
