@@ -72,7 +72,7 @@
 #define OFFSET_DDR       0x00001000
 #define OFFSET_SHAREDRAM 0x00000000 //x2000 voor RAM1 pru0, RAM0 voor pru 1
 #define PRUSS1_SHARED_DATARAM 4
-#define SAMPLES 120
+#define SAMPLES 3000
 
 #define TRUE 1
 #define FALSE 0
@@ -123,7 +123,7 @@ int test;
 * Global Function Definitions                                                 *
 ******************************************************************************/
 
-int main ( )
+int handlepru ( )
 {
 	gpio_export(ADC_BUF);
 	gpio_set_dir(ADC_BUF, OUTPUT);
@@ -370,10 +370,15 @@ int Save_Samples ( )
     for (x = 1; x<SAMPLES; x++)
     {
         value = *p_value;
+
+        //van 12b signed naar 16b signed
+
+        //value = (value << 4 ) >> 4;
+
         //value = value & 0xfff; //alleen eerste 12 bits
         //weergeef samplenummer, de int waarde en de hex waarde.
-        printf("%d,\t%d,\t%#016x, \t %#016x \n", x, value, value, p_value);
-        fprintf(save_file,"%d,\t%d,\t%#016x \n", x, value, value);
+        //printf("%d,\t%d,\t%#016x, \t %#016x \n", x, value, value, p_value);
+        fprintf(save_file,"%d\n", value);
         p_value = p_value + 2;
     }
     close(save_file);
