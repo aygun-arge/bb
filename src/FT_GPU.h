@@ -5,6 +5,7 @@
 #define FT_DL_SIZE           (8*1024)  //8KB Display List buffer size
 #define FT_CMD_FIFO_SIZE     (4*1024)  //4KB coprocessor Fifo size
 #define FT_CMD_SIZE          (4)       //4 byte per coprocessor command of EVE
+#define FT_ZERO				 0x00
 
 #define FT800_VERSION "1.9.0"
 #define ADC_DIFFERENTIAL     1UL
@@ -18,6 +19,7 @@
 #define BILINEAR             1UL
 #define BITMAPS              1UL
 #define BORDER               0UL
+
 
 #define CMDBUF_SIZE          4096UL
 #define CMD_APPEND           4294967070UL

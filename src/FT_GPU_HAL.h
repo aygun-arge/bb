@@ -147,7 +147,7 @@ typedef enum {
 }FT_GPU_POWER_MODE_T;
 
 #define FT_GPU_CORE_RESET  (0x68)
-
+/*
 ft_int32_t hal_strlen(const ft_char8_t *s);
 ft_void_t Ft_Gpu_Hal_Sleep(ft_uint16_t ms);
 ft_void_t Ft_Gpu_ClockSelect(Ft_Gpu_Hal_Context_t *host,FT_GPU_PLL_SOURCE_T pllsource);
@@ -163,5 +163,5 @@ ft_void_t Ft_Gpu_Hal_WaitLogo_Finish(Ft_Gpu_Hal_Context_t *host);
 ft_uint8_t    Ft_Gpu_Hal_TransferString(Ft_Gpu_Hal_Context_t *host,const ft_char8_t *string);
 ft_void_t Ft_Gpu_HostCommand(Ft_Gpu_Hal_Context_t *host,ft_uint8_t cmd);
 ft_int32_t Ft_Gpu_Hal_Dec2Ascii(ft_char8_t *pSrc,ft_int32_t value);
-
+*/
 #endif  /*FT_GPU_HAL_H*/

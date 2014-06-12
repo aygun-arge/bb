@@ -43,7 +43,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="LED_flash.c|uart4.c|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="FT_CoPro_Cmds.c|FT_Gpu_Hal.c|SampleApp_RawData.c|SampleApp.c|LED_flash.c|uart4.c|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -91,7 +91,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="LED_flash.c|uart4.c|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="FT_CoPro_Cmds.c|FT_Gpu_Hal.c|SampleApp_RawData.c|SampleApp.c|LED_flash.c|uart4.c|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -144,7 +144,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="main.c|LED_flash.c|uart4.c|general.c|BeagleBone.cpp|IO.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="FT_CoPro_Cmds.c|FT_Gpu_Hal.c|SampleApp_RawData.c|SampleApp.c|main.c|LED_flash.c|uart4.c|general.c|BeagleBone.cpp|IO.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

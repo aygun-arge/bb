@@ -24,9 +24,9 @@
 
 #include "devices.h"
 
-typedef uint16_t spidata_t;
+//typedef uint16_t spidata_t;
 
-#define ARRAY_SIZE(a) ( (sizeof(a)/sizeof(spidata_t)) * 2) /* lens in bytes */
+#define ARRAY_SIZE(a) ( (sizeof(a)/sizeof(uint16_t)) * 2) /* lens in bytes */
 
 static const char *device = "/dev/spidev1.0";
 static uint8_t mode = SPI_MODE_0;
@@ -40,29 +40,28 @@ static void pabort(const char *s) {
 }
 
 
-static void StartDisplay(int fd)
+void StartDisplay(int fd)
 {
-    int ret;
 	gpio_set_value(DISPL_PWRDWN, LOW);
     usleep(20000);
     gpio_set_value(DISPL_PWRDWN, HIGH);
 
-    command_write(FT_GPU_ACTIVE_M);
-    command_write(FT_GPU_EXTERNAL_OSC);
-    command_write(FT_GPU_PLL_48M);
+    command_write(fd, 0x00);
+    command_write(fd, 0x44);
+    command_write(fd, 0x62);
 }
 
-static void command_write(int fd, uint8_t cmd )
+void command_write(int fd, uint8_t cmd )
 {
-    static uint8_t com_mode 0x10; //voor command_write
-    uint8_t tmp;
+    int ret;
+	static uint8_t com_mode = 0x10 ; //voor command_write
+    uint16_t tmp;
     tmp = (cmd & 0x3F) | com_mode;
-    const uint8_t cmds[] = {tmp, FT_ZERO, FT_ZERO};
+    const uint16_t cmds[] = {tmp, FT_ZERO, FT_ZERO};
 
-    struct spi_ioc_transfer commandos
+    struct spi_ioc_transfer commandos =
     {
-        
-        .tx_buf = (unsigned char)cmds,
+        .tx_buf = (unsigned long)cmds,
         .rx_buf = 0, /* null receive data */
         .len = ARRAY_SIZE(cmds),
         .delay_usecs = delay,
@@ -70,17 +69,20 @@ static void command_write(int fd, uint8_t cmd )
         .bits_per_word = 8,
     };
     
-    if ((ioctl(fd, SPI_IOC_MESSAGE(1), &commandos)) < 1) pabort("can't send commands");
-    usleep(50);
+    ret = ioctl(fd, SPI_IOC_MESSAGE(1), &commandos);
+    if (ret < 1)
+        pabort("can't send spi message");
+    //usleep(50);
 }
     
-static void memory_write(int fd, uint32_t Addr, uint32_t Data)
+void memory_write(int fd, uint32_t Addr, uint32_t Data)
 {
-    static uint8_t mask = 0xFF;
+    int ret;
+	static uint8_t mask = 0xFF;
     static uint8_t partmask = 0x3F;
-    static uint8_t com_mode 0x40; //voor mem_write
+    static uint8_t com_mode = 0x40; //voor mem_write
     uint8_t addrMSB, addrMID, addrLSB, datapartMSB, datapartMID1, datapartMID2, datapartLSB;
-    static uint32_t tmp1, tmp2;
+    //static uint32_t tmp1, tmp2;
     
     addrLSB = Addr & mask;
     addrMID = (Addr >> 8)&mask;
@@ -93,9 +95,9 @@ static void memory_write(int fd, uint32_t Addr, uint32_t Data)
     
     const uint8_t memwrs[] = {addrMSB, addrMID, addrLSB, datapartMSB, datapartMID2, datapartMID1, datapartLSB};
     
-    struct spi_ioc_transfer memwrite
+    struct spi_ioc_transfer memwrite =
     {
-        .tx_buf = (unsigned char)memwrs,
+        .tx_buf = (unsigned long)memwrs,
         .rx_buf = 0, // null receive data
         .len = ARRAY_SIZE(memwrs),
         .delay_usecs = delay,
@@ -103,17 +105,20 @@ static void memory_write(int fd, uint32_t Addr, uint32_t Data)
         .bits_per_word = 8,
     };
     
-    if ((ioctl(fd, SPI_IOC_MESSAGE(1), &memwrite)) < 1) pabort("can't write to memory");
+    ret = ioctl(fd, SPI_IOC_MESSAGE(1), &memwrite);
+    if (ret < 1)
+        pabort("can't send spi message");
     usleep(50);
 }
 
-static void memory_read(int fd, uint32_t Addr, uint32_t Data)
+void memory_read(int fd, uint32_t Addr, uint32_t Data)
 {
-    static uint8_t mask = 0xFF;
+    int ret;
+	static uint8_t mask = 0xFF;
     static uint8_t partmask = 0x3F;
-    static uint8_t com_mode 0x00; //voor mem_read
-    uint8_t addrMSB, addrMID, addrLSB, datapartMSB, datapartMID1, datapartMID2, datapartLSB;
-    static uint32_t tmp1, tmp2;
+    static uint8_t com_mode = 0x00; //voor mem_read
+    uint8_t addrMSB, addrMID, addrLSB;
+    //static uint32_t tmp1, tmp2;
     
     addrLSB = Addr & mask;
     addrMID = (Addr >> 8)&mask;
@@ -121,9 +126,9 @@ static void memory_read(int fd, uint32_t Addr, uint32_t Data)
     
     const uint8_t memrds[] = {addrMSB, addrMID, addrLSB};
     
-    struct spi_ioc_transfer memwrite
+    struct spi_ioc_transfer memread =
     {
-        .tx_buf = (unsigned char)memrds,
+        .tx_buf = (unsigned long)memrds,
         .rx_buf = 0, // null receive data
         .len = ARRAY_SIZE(memrds),
         .delay_usecs = delay,
@@ -131,28 +136,27 @@ static void memory_read(int fd, uint32_t Addr, uint32_t Data)
         .bits_per_word = 8,
     };
     
-    if ((ioctl(fd, SPI_IOC_MESSAGE(1), &memread)) < 1) pabort("can't write to memory");
+    ret = ioctl(fd, SPI_IOC_MESSAGE(1), &memread);
+    if (ret < 1)
+        pabort("can't send spi message");
     usleep(50);
 }
 
 
-
-
-/*
-static void transferData(int fd, int send_data, int size)
+static void transferData(int fd)
 {
     int ret;
 
     // data, 16 bits,
-    static const spidata_t data[] = {0x1111};
+    static const uint16_t data[] = {0x8000};
 
 
     struct spi_ioc_transfer test_spi = {
-        .tx_buf = (unsigned long)send_data,
+        .tx_buf = (unsigned long)data,
         //.tx_buf = (unsigned long)data,
         .rx_buf = 0, // null receive data
-        //.len = ARRAY_SIZE(data),
-        .len = size,
+        .len = ARRAY_SIZE(data),
+        //.len = size,
         .delay_usecs = delay,
         .speed_hz = speed,
         .bits_per_word = bits,
@@ -162,10 +166,10 @@ static void transferData(int fd, int send_data, int size)
     if (ret < 1)
         pabort("can't send spi message");
 
-    usleep(50);
+    //usleep(50);
 }
 
-*/
+
 
 static void print_usage(const char *prog) {
     printf("Usage: %s [-D]\n", prog);
@@ -210,7 +214,6 @@ int main(int argc, char *argv[]) {
 
 	int ret = 0;
     int fd;
-    int size_data;
 
     parse_opts(argc, argv);
 
@@ -229,27 +232,24 @@ int main(int argc, char *argv[]) {
     ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
     if (ret == -1)
    pabort("can't set max speed hz");
-   //printf("spi format::\n");
-   //printf("spi mode: %d\n", mode);
-   //printf("bits per word: %d\n", bits);
-   //printf("spi clock speed:%d KHz (%d MHz)\n", speed/1000,speed/1000000);
-   //printf("bitrate: %.3f nanoseconds per bit\n", 1000000000.0/(float)speed);
 
 
-    StartDisplay(fd);
+   printf("spi format::\n");
+   printf("spi mode: %d\n", mode);
+   printf("bits per word: %d\n", bits);
+   printf("spi clock speed:%d KHz (%d MHz)\n", speed/1000,speed/1000000);
+   printf("bitrate: %.3f nanoseconds per bit\n", 1000000000.0/(float)speed);
 
 
-    spidata_t test[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
-    size_data = ARRAY_SIZE(test);
     //StartDisplay(fd);
 
 
 
 	while(1)
 	{
-		
+		command_write(fd, 0x0F);
         //StartDisplay(fd);
-		//transferData(fd, test, size_data);
+		//transferData(fd);
 	}
 
     close(fd);

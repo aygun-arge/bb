@@ -2,7 +2,7 @@
 #define _FT_PLATFORM_H_
 
 //#define ARDUINO_PLATFORM
-#define MSVC_PLATFORM
+//#define MSVC_PLATFORM
 
 //#define SAMAPP_DISPLAY_QVGA
 
