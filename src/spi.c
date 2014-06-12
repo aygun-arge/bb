@@ -1,5 +1,5 @@
 /*
-* spi.c - Beagle Bone Black ws2811 SPI test driver
+* spi.c - Beagle Bone Black
 *	ss pin (out) = P9_28 0x99c gpio113
 *	displ power down (out) = P9_23 GPIO1_17 gpio49 0x844
 *	display interrupt (in) = P9_12 GPIO1_28 gpio60 0x878
@@ -47,26 +47,98 @@ static void StartDisplay(int fd)
     usleep(20000);
     gpio_set_value(DISPL_PWRDWN, HIGH);
 
-        // data, 16 bits,
-    static const spidata_t data[] = {0x00, 0x00, 0x00, 0x44, 0x00, 0x00, 0x62, 0x00, 0x00};
+    command_write(FT_GPU_ACTIVE_M);
+    command_write(FT_GPU_EXTERNAL_OSC);
+    command_write(FT_GPU_PLL_48M);
+}
 
+static void command_write(int fd, uint8_t cmd )
+{
+    static uint8_t com_mode 0x10; //voor command_write
+    uint8_t tmp;
+    tmp = (cmd & 0x3F) | com_mode;
+    const uint8_t cmds[] = {tmp, FT_ZERO, FT_ZERO};
 
-    struct spi_ioc_transfer display = {
-        .tx_buf = (unsigned long)data,
+    struct spi_ioc_transfer commandos
+    {
+        
+        .tx_buf = (unsigned char)cmds,
         .rx_buf = 0, /* null receive data */
-        .len = ARRAY_SIZE(data),
+        .len = ARRAY_SIZE(cmds),
         .delay_usecs = delay,
         .speed_hz = speed,
         .bits_per_word = 8,
     };
-
-    ret = ioctl(fd, SPI_IOC_MESSAGE(1), &display);
-    if (ret < 1)
-        pabort("can't send spi message");
-
+    
+    if ((ioctl(fd, SPI_IOC_MESSAGE(1), &commandos)) < 1) pabort("can't send commands");
+    usleep(50);
+}
+    
+static void memory_write(int fd, uint32_t Addr, uint32_t Data)
+{
+    static uint8_t mask = 0xFF;
+    static uint8_t partmask = 0x3F;
+    static uint8_t com_mode 0x40; //voor mem_write
+    uint8_t addrMSB, addrMID, addrLSB, datapartMSB, datapartMID1, datapartMID2, datapartLSB;
+    static uint32_t tmp1, tmp2;
+    
+    addrLSB = Addr & mask;
+    addrMID = (Addr >> 8)&mask;
+    addrMSB = ((Addr >> 16)&partmask)|com_mode;
+    
+    datapartLSB  =  Data & mask;
+    datapartMID1 = (Data >> 8) & mask;
+    datapartMID2 = (Data >> 16) & mask;
+    datapartMSB  = (Data >> 24) & mask;
+    
+    const uint8_t memwrs[] = {addrMSB, addrMID, addrLSB, datapartMSB, datapartMID2, datapartMID1, datapartLSB};
+    
+    struct spi_ioc_transfer memwrite
+    {
+        .tx_buf = (unsigned char)memwrs,
+        .rx_buf = 0, // null receive data
+        .len = ARRAY_SIZE(memwrs),
+        .delay_usecs = delay,
+        .speed_hz = speed,
+        .bits_per_word = 8,
+    };
+    
+    if ((ioctl(fd, SPI_IOC_MESSAGE(1), &memwrite)) < 1) pabort("can't write to memory");
     usleep(50);
 }
 
+static void memory_read(int fd, uint32_t Addr, uint32_t Data)
+{
+    static uint8_t mask = 0xFF;
+    static uint8_t partmask = 0x3F;
+    static uint8_t com_mode 0x00; //voor mem_read
+    uint8_t addrMSB, addrMID, addrLSB, datapartMSB, datapartMID1, datapartMID2, datapartLSB;
+    static uint32_t tmp1, tmp2;
+    
+    addrLSB = Addr & mask;
+    addrMID = (Addr >> 8)&mask;
+    addrMSB = ((Addr >> 16)&partmask)|com_mode;
+    
+    const uint8_t memrds[] = {addrMSB, addrMID, addrLSB};
+    
+    struct spi_ioc_transfer memwrite
+    {
+        .tx_buf = (unsigned char)memrds,
+        .rx_buf = 0, // null receive data
+        .len = ARRAY_SIZE(memrds),
+        .delay_usecs = delay,
+        .speed_hz = speed,
+        .bits_per_word = 8,
+    };
+    
+    if ((ioctl(fd, SPI_IOC_MESSAGE(1), &memread)) < 1) pabort("can't write to memory");
+    usleep(50);
+}
+
+
+
+
+/*
 static void transferData(int fd, int send_data, int size)
 {
     int ret;
@@ -78,7 +150,7 @@ static void transferData(int fd, int send_data, int size)
     struct spi_ioc_transfer test_spi = {
         .tx_buf = (unsigned long)send_data,
         //.tx_buf = (unsigned long)data,
-        .rx_buf = 0, /* null receive data */
+        .rx_buf = 0, // null receive data
         //.len = ARRAY_SIZE(data),
         .len = size,
         .delay_usecs = delay,
@@ -92,6 +164,8 @@ static void transferData(int fd, int send_data, int size)
 
     usleep(50);
 }
+
+*/
 
 static void print_usage(const char *prog) {
     printf("Usage: %s [-D]\n", prog);
@@ -130,8 +204,6 @@ int main(int argc, char *argv[]) {
 	gpio_export(INTERRUPT_DISPL);
 	gpio_set_dir(INTERRUPT_DISPL, INPUT);
 
-	//gpio_set_value(DISPL_PWRDWN, HIGH);
-	//gpio_set_value(DISPL_PWRDWN, LOW);
 	//gpio_get_value(INTERRUPT_DISPL);
 
 
@@ -156,7 +228,7 @@ int main(int argc, char *argv[]) {
 
     ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
     if (ret == -1)
-   //pabort("can't set max speed hz");
+   pabort("can't set max speed hz");
    //printf("spi format::\n");
    //printf("spi mode: %d\n", mode);
    //printf("bits per word: %d\n", bits);
@@ -169,14 +241,15 @@ int main(int argc, char *argv[]) {
 
     spidata_t test[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
     size_data = ARRAY_SIZE(test);
-    StartDisplay(fd);
+    //StartDisplay(fd);
 
 
 
 	while(1)
 	{
-		//StartDisplay(fd);
-		transferData(fd, test, size_data);
+		
+        //StartDisplay(fd);
+		//transferData(fd, test, size_data);
 	}
 
     close(fd);
