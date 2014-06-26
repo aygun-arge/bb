@@ -162,7 +162,7 @@ uint32_t memory_read32(int fd, uint32_t Addr)
     addrMID = (Addr >> 8)&mask;
     addrMSB = ((Addr >> 16)&partmask)|com_mode;
     
-    const uint8_t memrds[] = {addrMSB, addrMID, addrLSB, 0x00};
+    const uint8_t memrds[] = {addrMSB, addrMID, addrLSB, ZERO};
     const uint8_t readback[4];
     
     struct spi_ioc_transfer memread[] =
@@ -177,9 +177,9 @@ uint32_t memory_read32(int fd, uint32_t Addr)
     		        .cs_change = 0,
     		},
     		{
-    				.tx_buf = 0,
+    				//.tx_buf = 0,
     				.rx_buf = (unsigned long)readback, // null receive data
-    				.len = ARRAY_SIZE(readback),
+    				.len = sizeof readback, //ARRAY_SIZE(readback),
     		        .delay_usecs = SPI_DELAY,
     		        .speed_hz = SPI_SPEED,
     		        .bits_per_word = WORD_LENGHT,
@@ -192,8 +192,19 @@ uint32_t memory_read32(int fd, uint32_t Addr)
     	pabort("can't send spi message");
     }
 
+   //return readback[0];
+
     tmp1 = ( ( ( (readback[3]<<24) | (readback[2]<<16) ) | (readback[1]<<8) ) |(readback[0]) );
+    //printf("%#x\n", tmp1);
     return tmp1;
+    //int i;
+
+    //for(i = 0; i<= sizeof readback-1; i++)
+    //{
+    //	printf("%#x\t", readback[i]);
+    //}
+    //printf("\n");
+
 }
 
 uint32_t memory_read16(int fd, uint32_t Addr)
@@ -224,9 +235,9 @@ uint32_t memory_read16(int fd, uint32_t Addr)
     		        .cs_change = 0,
     		},
     		{
-    				.tx_buf = 0,
+    				//.tx_buf = 0,
     				.rx_buf = (unsigned long)readback, // null receive data
-    				.len = ARRAY_SIZE(readback),
+    				.len = sizeof readback, //ARRAY_SIZE(readback),
     		        .delay_usecs = SPI_DELAY,
     		        .speed_hz = SPI_SPEED,
     		        .bits_per_word = WORD_LENGHT,
@@ -250,14 +261,14 @@ uint32_t memory_read8(int fd, uint32_t Addr)
     static uint8_t partmask = 0x3F;
     static uint8_t com_mode = 0x00; //voor mem_read
     uint8_t addrMSB, addrMID, addrLSB;
-    uint32_t tmp1;
+    uint32_t tmp1 = 0;
 
     addrLSB = Addr & mask;
     addrMID = (Addr >> 8)&mask;
     addrMSB = ((Addr >> 16)&partmask)|com_mode;
 
-    const uint8_t memrds[] = {addrMSB, addrMID, addrLSB, 0x00};
-    const uint8_t readback[1];
+    const uint8_t memrds[] = {addrMSB, addrMID, addrLSB, ZERO, ZERO};
+    const uint8_t readback[1] = {ZERO, };
 
     struct spi_ioc_transfer memread[] =
     {
@@ -271,9 +282,9 @@ uint32_t memory_read8(int fd, uint32_t Addr)
     		        .cs_change = 0,
     		},
     		{
-    				.tx_buf = 0,
+    				//.tx_buf = 0,
     				.rx_buf = (unsigned long)readback, // null receive data
-    				.len = ARRAY_SIZE(readback),
+    				.len = sizeof readback,//ARRAY_SIZE(readback),
     		        .delay_usecs = SPI_DELAY,
     		        .speed_hz = SPI_SPEED,
     		        .bits_per_word = WORD_LENGHT,
@@ -286,8 +297,7 @@ uint32_t memory_read8(int fd, uint32_t Addr)
     	pabort("can't send spi message");
     }
 
-    tmp1 = (readback[0]);
-    return tmp1;
+    return readback[0];
 }
 
 
@@ -299,13 +309,32 @@ uint32_t memory_read8(int fd, uint32_t Addr)
     	return 0;
     }
 
+    if((ioctl(fd, SPI_IOC_RD_MODE, &mode)) == -1)
+    {
+    	printf("SPI_INIT:: can't set SPI Mode\n");
+    	return 0;
+    }
+
+
     if((ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits)) == -1)
     {
     	printf("SPI_INIT:: can't set bits per word\n");
     	return 0;
     }
 
+    if((ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &bits)) == -1)
+    {
+    	printf("SPI_INIT:: can't set bits per word\n");
+    	return 0;
+    }
+
     if(ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed) == -1)
+    {
+    	printf("SPI_INIT:: can't set max speed\n");
+    	return 0;
+    }
+
+    if(ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed) == -1)
     {
     	printf("SPI_INIT:: can't set max speed\n");
     	return 0;

@@ -11,6 +11,9 @@
 #include "FT_GPU.h"
 
 int dli;
+uint32_t cmdBufferRd;
+uint32_t cmdBufferWr;
+
 
 void dl(int fd,unsigned long cmd)
 {
@@ -87,10 +90,10 @@ void setup_screen(int fd)
 
 void main()
 {
-	//gpio_export(DISPL_PWRDWN);
-	//gpio_set_dir(DISPL_PWRDWN, OUTPUT);
-	//gpio_export(INTERRUPT_DISPL);
-	//gpio_set_dir(INTERRUPT_DISPL, INPUT);
+	gpio_export(DISPL_PWRDWN);
+	gpio_set_dir(DISPL_PWRDWN, OUTPUT);
+	gpio_export(INTERRUPT_DISPL);
+	gpio_set_dir(INTERRUPT_DISPL, INPUT);
 	uint32_t p;
 
 	int spi_fd;
@@ -108,21 +111,48 @@ void main()
 
 StartDisplay(spi_fd);
 //usleep(300);
-printf("%#08x\n", memory_read8(spi_fd, 0x102400));
-printf("%#08x\n", memory_read32(spi_fd, 0x0C0000));
 
+//printf("%#08x\n", memory_read32(spi_fd, 0x0C0000));
+
+cmdBufferRd = memory_read32(spi_fd, REG_CMD_READ);
+cmdBufferWr = memory_read32(spi_fd, REG_CMD_WRITE);
+if( (4096 - (cmdBufferWr - cmdBufferRd)) > 4)
+{
+	memory_write32(spi_fd, 0x108000 + 0, CMD_DLSTART);
+	memory_write32(spi_fd, 0x108000 + 4, CLEAR_COLOR_RGB(255,100,100));
+	memory_write32(spi_fd, 0x108000 + 8, CLEAR(134,12,222));
+	memory_write32(spi_fd, 0x108000 + 12, DISPLAY());
+	memory_write32(spi_fd, REG_CMD_WRITE,cmdBufferWr + 16);
+}
+
+
+
+
+/*
+memory_write32(spi_fd, cmdBufferWr + 20, 0xFFFFFF14);
+memory_write16(spi_fd, cmdBufferWr + 24, 100);
+memory_write16(spi_fd, cmdBufferWr + 26, 120);
+memory_write16(spi_fd, cmdBufferWr + 28, 50);
+memory_write16(spi_fd, cmdBufferWr + 30, OPT_NOSECS);
+memory_write16(spi_fd, cmdBufferWr + 32, 8);
+memory_write16(spi_fd, cmdBufferWr + 34, 15);
+memory_write16(spi_fd, cmdBufferWr + 36, 0);
+memory_write16(spi_fd, cmdBufferWr + 38, 0);
+memory_write32(spi_fd, cmdBufferWr + 40, DISPLAY());
+memory_write32(spi_fd, REG_CMD_WRITE,cmdBufferWr + 44);
+
+*/
     while (1)
     	{
-    	int d = 0;
+    	int p;
+    	//p = memory_read32(spi_fd, 0x0C0000);
     	}
+
 
         close(spi_fd);
     	gpio_unexport(DISPL_PWRDWN);
     	gpio_unexport(INTERRUPT_DISPL);
         //return ret;
-
-
-
 
 }
 
