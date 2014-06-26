@@ -15,10 +15,82 @@ uint32_t cmdBufferRd;
 uint32_t cmdBufferWr;
 
 
+void cmd(int fd, unsinged long cmd)
+{
+
+
+}
+
+void cmd_txt(int fd, )
+{
+
+}
+
+void cmd_button(int fd, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t font, uint16_t options, const char* s)
+{
+0xffffff0d
+}
+
+void cmd_clock(int fd, uint16_t x, uint16_t y, uint16_t r, uint16_t options, uint16_t h, uint16_t m, uint16_t s,uint16_t ms)
+{
+ffffff14
+}
+
+void cmd_fgcolor(int fd, uint32_t c)
+{
+	ffffff0a
+}
+
+void cmd_gradcolor(int fd, uint32_t c)
+{
+	ffffff34
+}
+
+void cmd_gauge(int fd, uint16_t x, uint16_t y, uint16_t r, uint16_t options, uint16_t major, uint16_t minor, uint16_t val,uint16_t range)
+{
+ffffff13
+}
+
+void cmd_gradient(int fd, uint16_t x, uint16_t y, uint32_t rgb0, uint16_t x1, uint16_t y1, uint32_t rgb1)
+{
+ffffff0b
+}
+
+void cmd_keys(int fd, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t font, uint16_t options, const char* s)
+{
+0xffffff0f
+}
+
+void cmd_progress(int fd, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t options, uint16_t val, int16_t range)
+{
+0xffffff0e
+}
+
+void cmd_slider(int fd, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t options, uint16_t val, int16_t range)
+{
+0xffffff10
+}
+
+void cmd_dial(int fd, uint16_t x, uint16_t y, uint16_t r, uint16_t options, uint16_t val, int16_t range)
+{
+0xffffff10
+}
+
+
+int set_dli(int dli)
+{
+	static DLI;
+	DLI = dli;
+	return DLI;
+}
+
+
+
 void dl(int fd,unsigned long cmd)
 {
-	memory_write32(fd, RAM_DL + dli, cmd);
-	dli = dli + 4;
+	extern DLI;
+	memory_write32(fd, RAM_DL + DLI, cmd);
+	DLI = DLI + 4;
 }
 
 void StartDisplay(int fd)
@@ -118,7 +190,7 @@ cmdBufferRd = memory_read32(spi_fd, REG_CMD_READ);
 cmdBufferWr = memory_read32(spi_fd, REG_CMD_WRITE);
 if( (4096 - (cmdBufferWr - cmdBufferRd)) > 4)
 {
-	memory_write32(spi_fd, 0x108000 + 0, CMD_DLSTART);
+	memory_write32(spi_fd,  + 0, CMD_DLSTART);
 	memory_write32(spi_fd, 0x108000 + 4, CLEAR_COLOR_RGB(255,100,100));
 	memory_write32(spi_fd, 0x108000 + 8, CLEAR(134,12,222));
 	memory_write32(spi_fd, 0x108000 + 12, DISPLAY());
