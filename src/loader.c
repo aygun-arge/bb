@@ -1,33 +1,5 @@
 /*
- * loader.c lalalalalal
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *    Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- *    Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the
- *    distribution.
- *
- *    Neither the name of Texas Instruments Incorporated nor the names of
- *    its contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * loader.c
  *
  */
 
@@ -123,9 +95,7 @@ int test;
 
 int handlepru ( )
 {
-	gpio_export(ADC_BUF);
-	gpio_set_dir(ADC_BUF, OUTPUT);
-	gpio_set_value(ADC_BUF, HIGH);
+
 
 int p = 0;
     if(initializePruss() != 0)
@@ -180,11 +150,6 @@ int p = 0;
 
     //wacht tot pru iets heeft gedaan (1 sec = 200.000.000 instructies, dus pru waarschijnlijk klaar).
 
-    ///while(sharedMem_int[OFFSET_SHAREDRAM]!= 0x03)
-    //{
-   // 	printf("waiting!!!\r");
-    	//usleep(1);
-    //}
 
     printf("\nPRU 1 \n");
     sleep(5);
@@ -207,18 +172,13 @@ int p = 0;
     }while (!p);
 
 
-    //if(Save_Samples() != 0)
-    //{
-    //	printf("Sample save mislukt\n");
-    //}
-
-   // sharedMem_int[OFFSET_SHAREDRAM] = 0x04;
-
     //wacht op halt commando en clear interrupt
     prussdrv_pru_wait_event (PRU_EVTOUT_1);
 
     prussdrv_pru_clear_event (PRU_EVTOUT_1, PRU1_ARM_INTERRUPT);
+
     gpio_set_value(ADC_BUF, HIGH);
+
     printf("\n interrupt terug\n");
 
     prussdrv_pru_disable(PRU_1);
@@ -238,6 +198,13 @@ int p = 0;
  * Local Function Definitions                                                 *
  ******************************************************************************/
 
+ /**
+ *  \brief Brief
+ *  
+ *  \return returnx
+ *  
+ *  \details Details
+ */
 int initializePruss( )
 {
     static int returnx;
@@ -323,12 +290,6 @@ unsigned int test_match ( )
 	{
 		printf("VERIF:: geheugen is correct terug gelezen %#08x %#08x %#08x\n", return1, return2, return3);
 
-		//Zet inhoud shared geheugen terug naar 0
-		//sharedMem_int[OFFSET_SHAREDRAM] = 0;
-		//sharedMem_int[OFFSET_SHAREDRAM + 1] = 0;
-		//sharedMem_int[OFFSET_SHAREDRAM + 2] = 0;
-		//sharedMem_int[OFFSET_SHAREDRAM + 3] = 0;
-		//sharedMem_int[OFFSET_SHAREDRAM + 4] = 0;
 		return 0;
 	}
 	else
@@ -369,13 +330,6 @@ int Save_Samples ( )
     {
         value = *p_value;
 
-        //van 12b signed naar 16b signed
-
-        //value = (value << 4 ) >> 4;
-
-        //value = value & 0xfff; //alleen eerste 12 bits
-        //weergeef samplenummer, de int waarde en de hex waarde.
-        //printf("%d,\t%d,\t%#016x, \t %#016x \n", x, value, value, p_value);
         fprintf(save_file,"%d\n", value);
         p_value = p_value + 2;
     }

@@ -24,7 +24,7 @@
 
 //PINS
 
-#define TRANS_SELEC 48
+#define PROTOCOL_SELECT 48
 #define DISPL_PWRDWN 49
 #define INTERRUPT_DISPL 60
 #define ADC_BUF 61
@@ -44,6 +44,15 @@ LOW = 0,
 HIGH = 1
 }PIN_VALUE;
 
+typedef enum {
+	FNET = 0,
+	IONET = 1
+}PROTOCOL;
+
+
+typedef char bool;
+
+
 #define TRUE 1
 #define FALSE 0
 /****************************************************************
@@ -57,6 +66,8 @@ int gpio_get_value(unsigned int gpio, unsigned int *value);
 int gpio_set_edge(unsigned int gpio, char *edge);
 int gpio_fd_open(unsigned int gpio);
 int gpio_fd_close(int fd);
+void export_All_GPIO();
+void unexport_All_GPIO();
 
 void pabort(const char *s);
 

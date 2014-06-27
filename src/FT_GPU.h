@@ -1,6 +1,7 @@
 #ifndef _FT_GPU_H_
 #define _FT_GPU_H_
 
+#include "devices.h"
 /* Definitions used for FT800 co processor command buffer */
 #define FT_DL_SIZE           (8*1024)  //8KB Display List buffer size
 #define FT_CMD_FIFO_SIZE     (4*1024)  //4KB coprocessor Fifo size
