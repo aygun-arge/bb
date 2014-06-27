@@ -16,7 +16,7 @@
 //#include <linux/types.h>
 //#include <linux/spi/spidev.h>
 
-
+#include "FT_GPU.h"
 #include "devices.h"
 #include "spi.h"
 
@@ -62,6 +62,7 @@ void memory_write32(int fd, uint32_t Addr, uint32_t Data)
     datapartMID2 = (Data >> 16) & mask;
     datapartMSB  = (Data >> 24) & mask;
     
+
     const uint8_t memwrs32[] = {addrMSB, addrMID, addrLSB, datapartLSB, datapartMID1,  datapartMID2, datapartMSB};
     
 

@@ -16,7 +16,6 @@
 #define WORD_LENGHT 8//in bits
 #define SPI_SPEED	6000000 //in Hz
 #define SPI_DELAY	0
-#define ZERO 		0x00
 
 void command_write(int fd, uint8_t cmd );
 

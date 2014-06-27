@@ -13,70 +13,136 @@
 int dli;
 uint32_t cmdBufferRd;
 uint32_t cmdBufferWr;
+int DLI;
+
+#define BUTTON_TEST_XSIZE 200
+#define BUTTON_TEST_YSIZE 50
+
+#define BUTTON_TEST1_XLOC	100
+#define BUTTON_TEST1_YLOC	100
+
+#define BUTTON_TEST2_XLOC	200
+#define BUTTON_TEST2_YLOC	200
+
+#define BUTTON_START_XLOC	200
+#define BUTTON_START_YLOC	200
+
+#define BUTTON_START_XSIZE 300
+#define BUTTON_START_YSIZE 50
+
+#define BUTTON_TEST_HIGHLVL "high level"
+#define BUTTON_TEST_LOWLVL  "low level"
 
 
-void cmd(int fd, unsinged long cmd)
+
+
+
+
+
+
+int cmd(int fd, unsigned long cmd, int n)
 {
-
-
+	memory_write32(fd, RAM_CMD + n + 0, cmd);
+	return (n+4);
 }
-
+/*
 void cmd_txt(int fd, )
 {
 
 }
+*/
 
-void cmd_button(int fd, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t font, uint16_t options, const char* s)
+int cmd_button(int fd, int n, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t font, uint16_t options, const char* s)
 {
-0xffffff0d
+	memory_write32(fd, RAM_CMD + n + 0, CMD_BUTTON);
+	memory_write16(fd, RAM_CMD + n + 4,  x);
+	memory_write16(fd, RAM_CMD + n + 6,  y);
+	memory_write16(fd, RAM_CMD + n + 8,  w);
+	memory_write16(fd, RAM_CMD + n + 10, h);
+	memory_write16(fd, RAM_CMD + n + 12, font);
+	memory_write16(fd, RAM_CMD + n + 14, options);
+	memory_write16(fd, RAM_CMD + n + 16, s);
+	memory_write16(fd, RAM_CMD + n + 16 + strlen(s) + 1, 0);
+
+	return (n + strlen(s) + 3);
 }
 
-void cmd_clock(int fd, uint16_t x, uint16_t y, uint16_t r, uint16_t options, uint16_t h, uint16_t m, uint16_t s,uint16_t ms)
+void cmd_clock(int fd, int n, uint16_t x, uint16_t y, uint16_t r, uint16_t options, uint16_t h, uint16_t m, uint16_t s,uint16_t ms)
 {
-ffffff14
+	printf("c1\n");
+memory_write32(fd, RAM_CMD + n + 0, CMD_CLOCK);
+printf("c2\n");
+memory_write16(fd, RAM_CMD + n + 4,  x);
+printf("c4\n");
+memory_write16(fd, RAM_CMD + n + 6,  y);
+printf("c5\n");
+memory_write16(fd, RAM_CMD + n + 8,  r);
+printf("c6\n");
+memory_write16(fd, RAM_CMD + n + 10, options);
+printf("c7\n");
+memory_write16(fd, RAM_CMD + n + 12, h);
+printf("c8\n");
+memory_write16(fd, RAM_CMD + n + 14, m);
+printf("c9\n");
+memory_write16(fd, RAM_CMD + n + 16, s);
+printf("c10\n");
+memory_write16(fd, RAM_CMD + n + 18, ms);
+printf("c11\n");
+printf("%d", (n));
 }
 
-void cmd_fgcolor(int fd, uint32_t c)
+int cmd_fgcolor(int fd, int n, uint32_t c)
 {
-	ffffff0a
+	memory_write32(fd, RAM_CMD + n + 0, CMD_FGCOLOR);
+	memory_write32(fd, RAM_CMD + n + 4,  c);
+	return (n+8);
 }
 
-void cmd_gradcolor(int fd, uint32_t c)
+int cmd_bgcolor(int fd, int n, uint32_t c)
 {
-	ffffff34
+	memory_write32(fd, RAM_CMD + n + 0, CMD_BGCOLOR);
+	memory_write32(fd, RAM_CMD + n + 4,  c);
+	return (n+8);
 }
 
-void cmd_gauge(int fd, uint16_t x, uint16_t y, uint16_t r, uint16_t options, uint16_t major, uint16_t minor, uint16_t val,uint16_t range)
+int cmd_gradcolor(int fd, int n, uint32_t c)
+{
+	memory_write32(fd, RAM_CMD + n + 0, CMD_GRADCOLOR);
+	memory_write32(fd, RAM_CMD + n + 4,  c);
+	return (n+8);
+}
+/*
+void cmd_gauge(int fd, int n, uint16_t x, uint16_t y, uint16_t r, uint16_t options, uint16_t major, uint16_t minor, uint16_t val,uint16_t range)
 {
 ffffff13
 }
 
-void cmd_gradient(int fd, uint16_t x, uint16_t y, uint32_t rgb0, uint16_t x1, uint16_t y1, uint32_t rgb1)
+void cmd_gradient(int fd, int n, uint16_t x, uint16_t y, uint32_t rgb0, uint16_t x1, uint16_t y1, uint32_t rgb1)
 {
 ffffff0b
 }
 
-void cmd_keys(int fd, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t font, uint16_t options, const char* s)
+void cmd_keys(int fd, int n, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t font, uint16_t options, const char* s)
 {
 0xffffff0f
 }
 
-void cmd_progress(int fd, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t options, uint16_t val, int16_t range)
+void cmd_progress(int fd, int n, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t options, uint16_t val, int16_t range)
 {
 0xffffff0e
 }
 
-void cmd_slider(int fd, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t options, uint16_t val, int16_t range)
+void cmd_slider(int fd, int n, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t options, uint16_t val, int16_t range)
 {
 0xffffff10
 }
 
-void cmd_dial(int fd, uint16_t x, uint16_t y, uint16_t r, uint16_t options, uint16_t val, int16_t range)
+void cmd_dial(int fd, int n, uint16_t x, uint16_t y, uint16_t r, uint16_t options, uint16_t val, int16_t range)
 {
 0xffffff10
 }
 
-
+*/
 int set_dli(int dli)
 {
 	static DLI;
@@ -93,18 +159,33 @@ void dl(int fd,unsigned long cmd)
 	DLI = DLI + 4;
 }
 
-void StartDisplay(int fd)
+/*****
+ *
+ *	Start_FT800, starts FT800 chip
+ *	returns true of false
+ **/
+char start_FT800(int fd, uint8_t pwrMode, uint8_t clkSource, uint8_t clkFreq)
 {
 	gpio_set_value(DISPL_PWRDWN, LOW);
-    usleep(30000);	//Wait 20ms
+    usleep(30000);	//Wait 30ms (Should be at least 20ms
     gpio_set_value(DISPL_PWRDWN, HIGH);
-    usleep(30000); //wait 20ms
-    command_write(fd, FT_ACTIVE);
-    command_write(fd, FT_CLKEXT);
-    command_write(fd, FT_CLK48M);
+    usleep(30000);  //wait 30ms (Should be at least 20ms
+    command_write(fd, pwrMode);
+    command_write(fd, clkSource);
+    command_write(fd, clkFreq);
 
-    printf("%#08x \n",memory_read8(fd, 0x102400));
+    if(memory_read8(fd, 0x102400) == 0x7c)
+    {
+    	return TRUE;
+    }
+    return FALSE;
 }
+
+
+
+
+
+
 
 void CDS_logo_DL(int fd)
 {
@@ -123,7 +204,7 @@ void CDS_logo_DL(int fd)
     dl(fd, VERTEX2II(225,110, 31, 'D') );
     dl(fd, VERTEX2II(255,110, 31, 'S') );
     dl(fd, END());
-    dl(fd, DISPLAY());
+    dl(fd, DISPLAY_);
     memory_write8(fd, REG_DLSWAP, DLSWAP_FRAME);
 }
 
@@ -151,7 +232,7 @@ void setup_screen(int fd)
     //eerste displaylist
     memory_write32(fd, RAM_DL+0, CLEAR_COLOR_RGB(0,0,0));
     memory_write32(fd, RAM_DL+4, CLEAR(1,1,1));
-    memory_write32(fd, RAM_DL+8, DISPLAY());
+    memory_write32(fd, RAM_DL+8, DISPLAY_ );
     memory_write8(fd, REG_DLSWAP, DLSWAP_FRAME);
     memory_write8(fd, REG_GPIO_DIR, 0x80);
     memory_write8(fd, REG_GPIO, 0x80);
@@ -162,6 +243,9 @@ void setup_screen(int fd)
 
 void main()
 {
+	const char* k = "hallo";
+
+
 	gpio_export(DISPL_PWRDWN);
 	gpio_set_dir(DISPL_PWRDWN, OUTPUT);
 	gpio_export(INTERRUPT_DISPL);
@@ -181,50 +265,41 @@ void main()
     }
     //gpio_get_value(INTERRUPT_DISPL);
 
-StartDisplay(spi_fd);
-//usleep(300);
+	start_FT800(spi_fd, FT_ACTIVE, CLKEXT, )
 
-//printf("%#08x\n", memory_read32(spi_fd, 0x0C0000));
+	StartDisplay(spi_fd);
+	setup_screen(spi_fd);
 
-cmdBufferRd = memory_read32(spi_fd, REG_CMD_READ);
-cmdBufferWr = memory_read32(spi_fd, REG_CMD_WRITE);
-if( (4096 - (cmdBufferWr - cmdBufferRd)) > 4)
-{
-	memory_write32(spi_fd,  + 0, CMD_DLSTART);
-	memory_write32(spi_fd, 0x108000 + 4, CLEAR_COLOR_RGB(255,100,100));
-	memory_write32(spi_fd, 0x108000 + 8, CLEAR(134,12,222));
-	memory_write32(spi_fd, 0x108000 + 12, DISPLAY());
-	memory_write32(spi_fd, REG_CMD_WRITE,cmdBufferWr + 16);
-}
+	cmdBufferRd = memory_read32(spi_fd, REG_CMD_READ);
+	cmdBufferWr = memory_read32(spi_fd, REG_CMD_WRITE);
 
 
+		int x;
+		printf("1\n");
+		x = cmd(spi_fd, 0, CMD_DLSTART);
+		printf("2\n");
+		x = cmd(spi_fd, 4, CLEAR_COLOR_RGB(255,255,255));
+		printf("3\n");
+		x = cmd(spi_fd, 8, CLEAR(60,34,22));
+		printf("4\n");
+		x = cmd_clock(spi_fd, 12, 100, 120, 50, OPT_NOSECS, 8, 15, 0, 0);
+		printf("%d", x);
+		//x = cmd(spi_fd, x, DISPLAY_ );
+
+		x = cmd(spi_fd, x, CMD_SWAP );
+		memory_write32(spi_fd, REG_CMD_WRITE,cmdBufferWr + x);
 
 
-/*
-memory_write32(spi_fd, cmdBufferWr + 20, 0xFFFFFF14);
-memory_write16(spi_fd, cmdBufferWr + 24, 100);
-memory_write16(spi_fd, cmdBufferWr + 26, 120);
-memory_write16(spi_fd, cmdBufferWr + 28, 50);
-memory_write16(spi_fd, cmdBufferWr + 30, OPT_NOSECS);
-memory_write16(spi_fd, cmdBufferWr + 32, 8);
-memory_write16(spi_fd, cmdBufferWr + 34, 15);
-memory_write16(spi_fd, cmdBufferWr + 36, 0);
-memory_write16(spi_fd, cmdBufferWr + 38, 0);
-memory_write32(spi_fd, cmdBufferWr + 40, DISPLAY());
-memory_write32(spi_fd, REG_CMD_WRITE,cmdBufferWr + 44);
+	while (1)
+    {
 
-*/
-    while (1)
-    	{
-    	int p;
-    	//p = memory_read32(spi_fd, 0x0C0000);
-    	}
+    }
 
 
-        close(spi_fd);
-    	gpio_unexport(DISPL_PWRDWN);
-    	gpio_unexport(INTERRUPT_DISPL);
-        //return ret;
+    close(spi_fd);
+    gpio_unexport(DISPL_PWRDWN);
+    gpio_unexport(INTERRUPT_DISPL);
+    //return ret;
 
 }
 

@@ -282,7 +282,7 @@
 #define RESTORE_CONTEXT() ((35UL<<24))
 #define RETURN() ((36UL<<24))
 #define MACRO(m) ((37UL<<24)|(((m)&1UL)<<0))
-#define DISPLAY() ((0UL<<24))
+#define DISPLAY_ ((0UL<<24))
 
 #define FT_GPU_NUMCHAR_PERFONT (128)
 #define FT_GPU_FONT_TABLE_SIZE (148)
@@ -292,21 +292,22 @@
 /* FT800 font table structure */
 /* Font table address in ROM can be found by reading the address from 0xFFFFC location. */
 /* 16 font tables are present at the address read from location 0xFFFFC */
+
 typedef struct FT_Gpu_Fonts
 {
 	/* All the values are in bytes */
 	/* Width of each character font from 0 to 127 */
-	ft_uint8_t	FontWidth[FT_GPU_NUMCHAR_PERFONT];
+	uint8_t	FontWidth[FT_GPU_NUMCHAR_PERFONT];
 	/* Bitmap format of font wrt bitmap formats supported by FT800 - L1, L4, L8 */
-	ft_uint32_t	FontBitmapFormat;
+	uint32_t	FontBitmapFormat;
 	/* Font line stride in FT800 ROM */
-	ft_uint32_t	FontLineStride;
+	uint32_t	FontLineStride;
 	/* Font width in pixels */
-	ft_uint32_t	FontWidthInPixels;
+	uint32_t	FontWidthInPixels;
 	/* Font height in pixels */
-	ft_uint32_t	FontHeightInPixels;
+	uint32_t	FontHeightInPixels;
 	/* Pointer to font graphics raw data */
-	ft_uint32_t	PointerToFontGraphicsData;
+	uint32_t	PointerToFontGraphicsData;
 }FT_Gpu_Fonts_t;
 
 #endif /* #ifndef _FT_GPU_H_ */
