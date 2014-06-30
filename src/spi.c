@@ -6,9 +6,22 @@
 *
 */
 
+//#include <stdint.h>
+//#include <unistd.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <getopt.h>
+//#include <fcntl.h>
+//#include <sys/ioctl.h>
+//#include <linux/types.h>
+//#include <linux/spi/spidev.h>
+
 #include "FT_GPU.h"
 #include "devices.h"
 #include "spi.h"
+
+//static const char *device = "/dev/spidev1.0"
+//static uint8_t mode = SPI_MODE_0;
 
 /**
  *  \brief Brief
