@@ -40,11 +40,6 @@ void cmd(int fd, uint32_t offset, uint32_t cmd)
 	mem_wr32(fd, RAM_CMD + offset, cmd);
 }
 
-
-
-
-
-
 void cmd_clock(int fd, int offset, uint16_t x, uint16_t y,
 				uint16_t r, uint16_t options, uint16_t h,
 					uint16_t m, uint16_t s,uint16_t ms){
@@ -61,6 +56,116 @@ void cmd_clock(int fd, int offset, uint16_t x, uint16_t y,
 	mem_wr16(fd, RAM_CMD + offset + 18, ms);
 
 	int i = 20;
+}
+
+/**
+ *  \brief Contains functions of drawing a clock by FT800 co-processor
+ *  
+ *  \param [in] fd      File pointer to spi
+ *  \param [in] offset  Offset on the RAM_CMD
+ *  \param [in] x       Position X on screen
+ *  \param [in] y       Position Y on screen
+ *  \param [in] r       Radius of the clock
+ *  \param [in] options additional options
+ *  \param [in] h       hours
+ *  \param [in] m       minutes
+ *  \param [in] s       seconds
+ *  \param [in] ms      milliseconds
+ *  \return Returns the offset created by this function.
+ */
+int cmd_clock2(int fd, int offset, uint16_t x, uint16_t y, uint16_t r, uint16_t options, uint16_t h, uint16_t m, uint16_t s,uint16_t ms)
+{
+	cmd(fd, offset, CMD_CLOCK);
+	cmd(fd, offset + 4, (((uint32_t)y<<16)|(x & 0xffff)));
+	cmd(fd, offset + 8, (((uint32_t)options<<16)|(r & 0xffff)));
+	cmd(fd, offset + 12, (((uint32_t)m<<16)|(h & 0xffff)));
+	cmd(fd, offset + 16, (((uint32_t)m<<16)|(h & 0xffff)));
+	cmd(fd, offset + 20, (((uint32_t)ms<<16)|(s & 0xffff)));
+
+	return 24; //24 voor echte offset
+}
+
+int cmd_button(int fd, int offset, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t font, uint16_t options, const char* s)
+{
+	mem_wr32(fd, RAM_CMD + offset, CMD_BUTTON);
+	mem_wr16(fd, RAM_CMD + offset + 4,  x);
+	mem_wr16(fd, RAM_CMD + offset + 6,  y);
+	mem_wr16(fd, RAM_CMD + offset + 8,  w);
+	mem_wr16(fd, RAM_CMD + offset + 10, h);
+	mem_wr16(fd, RAM_CMD + offset + 12, font);
+	mem_wr16(fd, RAM_CMD + offset + 14, options);
+	mem_wr16(fd, RAM_CMD + offset + 16, s);
+	mem_wr16(fd, RAM_CMD + offset + 16 + strlen(s) + 1, 0);
+
+	return (16 + strlen(s) + 3);
+}
+
+int cmd_button2(int fd, int offset, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t font, uint16_t options, const char* s)
+{
+	cmd(fd, offset, CMD_BUTTON);
+	cmd(fd, offset + 4, (((uint32_t)y<<16)|(x & 0xffff)));
+	cmd(fd, offset + 8, (((uint32_t)h<<16)|(w & 0xffff)));
+	cmd(fd, offset + 12, (((uint32_t)options<<16)|(font & 0xffff)));
+	mem_wr16(fd, RAM_CMD + offset + 16, s);
+	mem_wr16(fd, RAM_CMD + offset + 16 + strlen(s) + 1, 0);
+
+	return (16 + strlen(s) + 3);
+}
+
+int cmd_fgcolor(int fd, int offset, uint32_t c)
+{
+	cmd(fd, offset, CMD_FGCOLOR);
+	cmd(fd, offset + 4,  c);
+	return 8;
+}
+
+int cmd_bgcolor(int fd, int offset, uint32_t c)
+{
+	cmd(fd, offset, CMD_BGCOLOR);
+	cmd(fd, offset + 4,  c);
+	return 8;
+}
+
+int cmd_gradcolor(int fd, int offset, uint32_t c)
+{
+	cmd(fd, offset, CMD_GRADCOLOR);
+	cmd(fd, offset + 4,  c);
+	return 8;
+}
+
+int cmd_slider(int fd, int offset, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t options, uint16_t val, int16_t range)
+{
+//0xffffff10
+	cmd(fd, offset, CMD_SLIDER);
+	cmd(fd, offset + 4, (((uint32_t)y<<16)|(x & 0xffff)));
+	cmd(fd, offset + 8, (((uint32_t)h<<16)|(w & 0xffff)));
+	cmd(fd, offset + 12, (((uint32_t)val<<16)|(options & 0xffff)));
+	mem_wr16(fd, RAM_CMD + offset + 16, range);
+
+	return 18;
+}
+
+int cmd_progress(int fd, int n, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t options, uint16_t val, int16_t range)
+{
+//0xffffff0e
+	cmd(fd, offset, CMD_PROGRESS);
+	cmd(fd, offset + 4, (((uint32_t)y<<16)|(x & 0xffff)));
+	cmd(fd, offset + 8, (((uint32_t)h<<16)|(w & 0xffff)));
+	cmd(fd, offset + 12, (((uint32_t)val<<16)|(options & 0xffff)));
+	mem_wr16(fd, RAM_CMD + offset + 16, range);
+
+	return 18;
+}
+
+int cmd_gauge(int fd, int n, uint16_t x, uint16_t y, uint16_t r, uint16_t options, uint16_t major, uint16_t minor, uint16_t val,uint16_t range)
+{
+//ffffff13
+	cmd(fd, offset, CMD_GAUGE);
+	cmd(fd, offset + 4, (((uint32_t)y<<16)|(x & 0xffff)));
+	cmd(fd, offset + 8, (((uint32_t)options<<16)|(r & 0xffff)));
+	cmd(fd, offset + 12, (((uint32_t)minor<<16)|(major & 0xffff)));
+	cmd(fd, offset + 16, (((uint32_t)range<<16)|(val & 0xffff)));
+	return 20;
 }
 
 int freespace ()
@@ -240,30 +345,21 @@ int main()
 	CMD_offset = CMD_offset + 4;
 	mem_wr16(spi_fd, REG_CMD_WRITE , CMD_offset);
 
-
-	/*
-
-	mem_wr32(spi_fd, RAM_CMD + CMD_offset, CMD_DLSTART);
+	//test met 2 buttons
+	cmd(spi_fd, CMD_offset ,CMD_DLSTART);
 	CMD_offset = CMD_offset + 4;
-	printf("%d\n", CMD_offset);
-	mem_wr32(spi_fd, RAM_CMD + CMD_offset, CLEAR_COLOR_RGB(1,1,1));
+	cmd(spi_fd, CMD_offset ,CLEAR_COLOR_RGB(1,1,1));
 	CMD_offset = CMD_offset + 4;
-	printf("%d\n", CMD_offset);
-	mem_wr32(spi_fd, RAM_CMD + CMD_offset, CLEAR(1,1,1));
-	printf("lala\n");
-
-	cmd_clock(spi_fd, 100, 120, 50, OPT_NOSECS, 8, 15, 0, 0);
-
-	CMD_offset = mem_rd16(spi_fd, REG_CMD_WRITE);
-
-	mem_wr32(spi_fd, RAM_CMD + CMD_offset, DISPLAY_);
+	cmd(spi_fd, CMD_offset ,CLEAR(1,1,1));
 	CMD_offset = CMD_offset + 4;
-	printf("%d\n", CMD_offset);
-	mem_wr32(spi_fd, RAM_CMD + CMD_offset, CMD_SWAP);
+	CMD_offset = cmd_button2(spi_fd, CMD_offset, 100, 50, 60, 40, 32, 0, "test");
+	CMD_offset = cmd_button2(int fd, CMD_offset, 200, 50, 60, 40, 32, 0, "vier");
+	cmd(spi_fd, CMD_offset ,DISPLAY_);
 	CMD_offset = CMD_offset + 4;
-	printf("%d\n", CMD_offset);
+	cmd(spi_fd, CMD_offset ,CMD_SWAP);
+	CMD_offset = CMD_offset + 4;
 	mem_wr16(spi_fd, REG_CMD_WRITE , CMD_offset);
-*/
+	
 	while (1)
     {
 
