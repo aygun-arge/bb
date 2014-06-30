@@ -319,18 +319,12 @@ int Save_Samples ( )
     }
     printf("SAVE:: File correct geopend, start sampling\n");
 
-    //Neem zoveel samples als aangegeven in macro SAMPLES en AND deze om alleen de 12 bits te krijgen
-    printf("This file named: %s contains sample values, use with caution!\n", FILENAME);
-    fprintf(save_file,"This file named: %s contains sample values, use with caution!\n", FILENAME);
-
-    printf("nummer,\t int,\t hex \n");
-    fprintf(save_file,"nummer,\t int,\t hex \n");
-
     for (x = 1; x<SAMPLES; x++)
     {
         value = *p_value;
 
-        fprintf(save_file,"%d\n", value);
+        //fprintf(save_file,"%f\n", (value * 0.000433));
+        fprintf(save_file, "%d\n", value);
         p_value = p_value + 2;
     }
     close(save_file);

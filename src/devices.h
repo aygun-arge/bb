@@ -71,4 +71,7 @@ void unexport_All_GPIO();
 
 void pabort(const char *s);
 
+
+int handlepru ( );
+
 #endif /* DEVICES_H_ */

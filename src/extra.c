@@ -5,6 +5,10 @@
  *      Author: sander
  */
 
+#include "devices.h"
+#include "spi.h"
+#include "FT800.h"
+#include "FT_GPU.h"
 
 int cmd_fgcolor(int fd, int n, uint32_t c)
 {
