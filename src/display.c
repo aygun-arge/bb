@@ -156,13 +156,29 @@ int main()
 	if(setup_Screen(spi_fd) != TRUE) printf("Screen dimensions not initialized!\n");
 	printf("\nstage3\n");
 #endif //FT800
-	if(CDS_logo_DL(spi_fd)!=TRUE)printf("\nlalla");
+//	if(CDS_logo_DL(spi_fd)!=TRUE)printf("\nlalla");
+
+
+	if(dl_presample(spi_fd)	!=TRUE)printf("\nfail before sample");
 
 #ifdef PRUss
 
 handlepru();
 
 #endif
+sleep(3);
+	if(dl_aftersample(spi_fd, 1, 0)	!=TRUE)printf("\nfail after sample");//good
+sleep(4);
+	if(dl_aftersample(spi_fd, 0, 1)	!=TRUE)printf("\nfail after sample");//good
+sleep(4);
+	if(dl_aftersample(spi_fd, 0, 2)	!=TRUE)printf("\nfail after sample");//good
+sleep(4);
+	if(dl_aftersample(spi_fd, 0, 3)	!=TRUE)printf("\nfail after sample");//good
+sleep(4);
+	if(dl_aftersample(spi_fd, 0, 4)	!=TRUE)printf("\nfail after sample");//good
+sleep(4);
+	if(CDS_logo_DL(spi_fd)!=TRUE)printf("\nlalla");
+
 
 #ifdef sweeper
 	for( y = 0; y < 240; y=y+40)

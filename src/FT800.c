@@ -54,9 +54,9 @@ bool CDS_logo_DL(int fd)
 	dli = dl(fd,dli ,END());
 	dli = dl(fd,dli ,COLOR_RGB(255, 255, 255));
 	dli = dl(fd,dli ,BEGIN(BITMAPS));
-	dli = dl(fd,dli ,VERTEX2II(195,110, 31, 'C') );
-	dli = dl(fd,dli ,VERTEX2II(225,110, 31, 'D') );
-	dli = dl(fd,dli ,VERTEX2II(255,110, 31, 'S') );
+	dli = dl(fd,dli ,VERTEX2II(195,117, 31, 'C') );
+	dli = dl(fd,dli ,VERTEX2II(225,117, 31, 'D') );
+	dli = dl(fd,dli ,VERTEX2II(255,117, 31, 'S') );
 	dli = dl(fd,dli ,END());
 	dli = dl(fd,dli ,DISPLAY_);
     mem_wr8(fd, REG_DLSWAP, DLSWAP_FRAME);

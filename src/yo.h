@@ -21,6 +21,8 @@ bool dl8(int fd);
 bool dl9(int fd);
 bool dl10(int fd);
 bool dlvar(int fd, short x, short y);
+bool dl_presample(int fd);
+bool dl_aftersample(int fd, bool result, char fault);
 
 #endif /* YO_H_ */
 
