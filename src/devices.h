@@ -17,6 +17,10 @@
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
+#include "spi.h"
+#include "FT800.h"
+#include "FT_GPU.h"
+#include <string.h>
 
 #define UART4	"/dev/ttyO4"
 #define SPI1	"/dev/spidev1.0"

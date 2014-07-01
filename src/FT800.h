@@ -124,4 +124,40 @@ typedef char ft_bool_t;
 #define ft_pgm_read_word(addr)   (*(ft_int16_t*)(addr))
 
 
+/* Functions to use with FT800 */
+
+typedef char bool;
+typedef unsigned char  uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int   uint32_t;
+
+
+
+int dl(int fd, int offset, unsigned long cmd);
+bool CDS_logo_DL(int fd);
+bool setup_Screen(int fd);
+bool start_FT800(int fd, uint8_t pwrMode, uint8_t clkSource, uint8_t clkFreq);
+void cmd(int fd, uint32_t offset, uint32_t cmd);
+int start_cmdDL(int fd, int offset);
+int freespace (int fd);
+uint16_t get_offset(int fd);
+int cmd_clock(int fd, int offset, uint16_t x, uint16_t y, uint16_t r, uint16_t options, uint16_t h, uint16_t m, uint16_t s,uint16_t ms);
+int cmd_fgcolor(int fd, int offset, uint32_t c);
+int cmd_bgcolor(int fd, int offset, uint32_t c);
+int cmd_gradcolor(int fd, int offset, uint32_t c);
+int cmd_gradient(int fd, int offset, uint16_t x0, uint16_t y0, uint32_t rgb0, uint16_t x1, uint16_t y1, uint32_t rgb1);
+int cmd_slider(int fd, int offset, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t options, uint16_t val, uint16_t range);
+int cmd_progress(int fd, int offset, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t options, uint16_t val, uint16_t range);
+int cmd_gauge(int fd, int offset, uint16_t x, uint16_t y, uint16_t r, uint16_t options, uint16_t major, uint16_t minor, uint16_t val,uint16_t range);
+
+
+
+
+
+
+
+
+
+
+
 #endif /* FT800_H_ */

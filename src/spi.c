@@ -107,6 +107,83 @@ void mem_wr32(int fd, uint32_t Addr, uint32_t Data)
     }
 }
 
+
+
+void mem_wr_str(int fd, uint32_t Addr, uint32_t length, char *s)
+{
+	static uint8_t mask = 0xFF;
+	static uint8_t partmask = 0x3F;
+	static uint8_t com_mode = 0x80; //voor mem_write
+
+	uint8_t temp1 = 0, temp2, temp3, temp4;
+
+   uint8_t array[4+length];
+   array[0] = ((Addr >> 16)&partmask)|com_mode;
+   array[1] = (Addr >> 8)&mask;
+   array[2] = Addr & mask;
+
+   strcat(array, s);
+while (array[temp1] != 0)
+{
+	temp1++;
+}
+
+
+#ifdef DATAFORMAT_LITTLE_ENDIAN
+   //const uint8_t memwrs[3];//const uint8_t memwrs32[] = {addrMSB, addrMID, addrLSB, datapartLSB, datapartMID1,  datapartMID2, datapartMSB};
+   //memwrs[0] = array[0];
+   //memwrs[1] = array[1];
+   //memwrs[2] = array[2];
+   //for(temp2 = 3, temp3 = temp1; temp2 = temp1, temp3 = 3; temp2++, temp3--)
+   //{
+	//   memwrs[temp2] = array[temp3];
+   //}
+const uint8_t memwrs[4];
+   #endif //DATAFORMAT_LITTLE_ENDIAN
+#ifdef DATAFORMAT_BIG_ENDIAN
+   const uint8_t memwrs[]
+   strcpy(memwrs, array);
+#endif //DATAFORMAT_BIG_ENDIAN
+
+
+
+   struct spi_ioc_transfer memwrite32 =
+   {
+       .tx_buf = (unsigned long)memwrs,
+       .rx_buf = 0, // null receive data
+       .len = sizeof(memwrs),
+       .delay_usecs = SPI_DELAY,
+       .speed_hz = SPI_SPEED,
+       .bits_per_word = WORD_LENGHT,
+       .cs_change = 0,
+   };
+
+   if(ioctl(fd, SPI_IOC_MESSAGE(1), &memwrite32) < 1)
+   {
+   	pabort("can't send spi message");
+   }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  *  \brief Function which writes specified data bytes with the size of two bytes to a specified address over the SPI bus.
  *  

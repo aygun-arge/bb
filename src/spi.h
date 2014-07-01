@@ -9,7 +9,7 @@
 #define SPI_H_
 
 #include "devices.h"
-
+typedef char bool;
 #define DATAFORMAT_LITTLE_ENDIAN 1
 
 #define ARRAY_SIZE(a) ( (sizeof(a)/sizeof(uint16_t)) * 2) /* lens in bytes */
