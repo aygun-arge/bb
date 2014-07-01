@@ -133,6 +133,11 @@ int send_string(int fd, uint16_t offset, char *s)
 int main()
 {
 //#define FT800
+//#define sweeper
+//#define klok
+//#define PRUss
+
+
 
 #ifdef FT800
 	export_All_GPIO();//gpio_get_value(INTERRUPT_DISPL);
@@ -153,35 +158,12 @@ int main()
 #endif //FT800
 	if(CDS_logo_DL(spi_fd)!=TRUE)printf("\nlalla");
 
-	/*
-	while(1)
-	{
-		if( dl1(spi_fd) != TRUE) printf("faal1\n");
-		usleep(500000);
-		if( dl2(spi_fd) != TRUE) printf("faal2\n");
-		usleep(500000);
-		if( dl3(spi_fd) != TRUE) printf("faal3\n");
-		usleep(500000);
-		if( dl4(spi_fd) != TRUE) printf("faal4\n");
-		usleep(500000);
-		if( dl5(spi_fd) != TRUE) printf("faal5\n");
-		usleep(500000);
-		if( dl6(spi_fd) != TRUE) printf("faal6\n");
-		usleep(500000);
-		if( dl7(spi_fd) != TRUE) printf("faal7\n");
-		usleep(500000);
-		if( dl8(spi_fd) != TRUE) printf("faal8\n");
-		usleep(500000);
-		if( dl9(spi_fd) != TRUE) printf("faal9\n");
-		usleep(500000);
-		if( dl10(spi_fd) != TRUE) printf("faal10\n");
-		usleep(500000);
-	}
-*/
+#ifdef PRUss
 
-	int offset;
-	offset = get_offset(spi_fd);
-#define sweeper
+handlepru();
+
+#endif
+
 #ifdef sweeper
 	for( y = 0; y < 240; y=y+40)
 	{
@@ -193,40 +175,30 @@ int main()
 	}
 #endif
 
-
-
-
-
-
-
-
 #ifdef klok
-for( x = 0 ; x < 24 ; x++ )
-{
-	//printf("\n%d", x);
-	for( y = 0 ; y < 61 ; y ++)
+	int offset;
+	offset = get_offset(spi_fd);
+	for( x = 0 ; x < 24 ; x++ )
 	{
-		for( z = 0; z < 61; z ++)
+		//printf("\n%d", x);
+		for( y = 0 ; y < 61 ; y ++)
 		{
-			offset = get_offset(spi_fd);
-			offset = start_cmdDL(spi_fd, offset);
-			offset = cmd_clock(spi_fd, offset, 240, 120, 100, 0, x, y, z, 3);
-			cmd(spi_fd,  offset  ,DISPLAY_ );
-			offset = offset + 4;
-			cmd(spi_fd,  offset  ,CMD_SWAP );
-			offset = offset + 4;
-			mem_wr16(spi_fd, REG_CMD_WRITE , cmdBufferWr + offset);
+			for( z = 0; z < 61; z ++)
+			{
+				offset = get_offset(spi_fd);
+				offset = start_cmdDL(spi_fd, offset);
+				offset = cmd_clock(spi_fd, offset, 240, 120, 100, 0, x, y, z, 3);
+				cmd(spi_fd,  offset  ,DISPLAY_ );
+				offset = offset + 4;
+				cmd(spi_fd,  offset  ,CMD_SWAP );
+				offset = offset + 4;
+				mem_wr16(spi_fd, REG_CMD_WRITE , cmdBufferWr + offset);
 
-			usleep(500000);
+				usleep(500000);
+			}
 		}
 	}
-}
 #endif
-
-
-
-
-
 
 	while(1)
 	{
