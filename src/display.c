@@ -159,26 +159,37 @@ int main()
 //	if(CDS_logo_DL(spi_fd)!=TRUE)printf("\nlalla");
 
 
-	if(dl_presample(spi_fd)	!=TRUE)printf("\nfail before sample");
+
+	//if(dl_test(spi_fd)	!=TRUE)printf("\nfail blabla");
+
+
 
 #ifdef PRUss
+	if(dl_presample(spi_fd)	!=TRUE)printf("\nfail before sample");
 
-handlepru();
+	handlepru(buffer);
 
-#endif
-sleep(3);
 	if(dl_aftersample(spi_fd, 1, 0)	!=TRUE)printf("\nfail after sample");//good
-sleep(4);
-	if(dl_aftersample(spi_fd, 0, 1)	!=TRUE)printf("\nfail after sample");//good
-sleep(4);
-	if(dl_aftersample(spi_fd, 0, 2)	!=TRUE)printf("\nfail after sample");//good
-sleep(4);
-	if(dl_aftersample(spi_fd, 0, 3)	!=TRUE)printf("\nfail after sample");//good
-sleep(4);
-	if(dl_aftersample(spi_fd, 0, 4)	!=TRUE)printf("\nfail after sample");//good
-sleep(4);
-	if(CDS_logo_DL(spi_fd)!=TRUE)printf("\nlalla");
+}
+#endif
 
+#define UI_example
+
+#ifdef UI_example
+	sleep(4);
+	if(dl_presample(spi_fd)	!=TRUE)printf("\nfail before sample");
+	sleep(4);
+	if(dl_aftersample(spi_fd, 1, 0)	!=TRUE)printf("\nfail after sample");//good
+	sleep(4);
+	if(dl_aftersample(spi_fd, 0, 1)	!=TRUE)printf("\nfail after sample");//good
+	sleep(4);
+	if(dl_aftersample(spi_fd, 0, 2)	!=TRUE)printf("\nfail after sample");//good
+	sleep(4);
+	if(dl_aftersample(spi_fd, 0, 3)	!=TRUE)printf("\nfail after sample");//good
+	sleep(4);
+
+	if(CDS_logo_DL(spi_fd)!=TRUE)printf("\nlalla");
+#endif //UI_example
 
 #ifdef sweeper
 	for( y = 0; y < 240; y=y+40)

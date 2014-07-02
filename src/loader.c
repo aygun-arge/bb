@@ -30,7 +30,7 @@
 ******************************************************************************/
 
 #define PATH		"./sample.bin" // ./ Hier de filenaam aanpassen
-#define FILENAME	"SAMPLES.txt"	// hier filenaam en extentie aanpassen
+#define bla	"SAMPLES.txt"	// hier filenaam en extentie aanpassen
 
 #define PRU_1		1
 #define PRU_0		0
@@ -62,7 +62,7 @@
 ******************************************************************************/
 //int Init_RAM( );
 int initializePruss( );
-int Save_Samples ( );
+int Save_Samples ( char *filename);
 int PRUSS_RAM_init( );
 unsigned int test_match ( );
 
@@ -93,7 +93,7 @@ int test;
 * Global Function Definitions                                                 *
 ******************************************************************************/
 
-int handlepru ( )
+int handlepru ( char *filename )
 {
 
 
@@ -160,7 +160,7 @@ int p = 0;
     	if (sharedMem_int[OFFSET_SHAREDRAM] == 0x03)
     	{
     	    printf("\nPRU 4 \n");
-    		if(Save_Samples() != 0)
+    		if(Save_Samples(filename) != 0)
     	    {
     	    	printf("Sample save mislukt\n");
     	    }
@@ -299,7 +299,7 @@ unsigned int test_match ( )
 	}
 }
 
-int Save_Samples ( )
+int Save_Samples ( char *filename)
 {
     unsigned short int *p_value;//16 bits
     unsigned short int *Register_Address;
@@ -310,11 +310,11 @@ int Save_Samples ( )
 
     FILE* save_file;
 
-    printf("SAVE:: Open : %s in write mode\n", FILENAME);
+    printf("SAVE:: Open : %s in write mode\n", filename);
 
-    if((save_file = fopen(FILENAME, "w")) == NULL)
+    if((save_file = fopen(filename, "w")) == NULL)
     {
-    	printf("ERR_SAVE:: Kan %s niet openen!\n", FILENAME);
+    	printf("ERR_SAVE:: Kan %s niet openen!\n", filename);
     	return -1;
     }
     printf("SAVE:: File correct geopend, start sampling\n");
@@ -328,7 +328,7 @@ int Save_Samples ( )
         p_value = p_value + 2;
     }
     close(save_file);
-    printf("SAVE:: Data geschreven in %s", FILENAME);
+    printf("SAVE:: Data geschreven in %s", filename);
 
     return 0;
 
